@@ -23,9 +23,9 @@ services:
       HOST: "0.0.0.0"
       OLLAMA_SERVER: "http://ollama:11434"
       MONGO_SERVER: "mongodb://db_mongo:27017"
-      INFINITY_SERVER: "infinity"
+      INFINITY_HOST: "infinity"
       INFINITY_PORT: 23817
-      REDIS_SERVER: "db_redis"
+      REDIS_HOST: "db_redis"
       REDIS_PORT: 6379
     depends_on:
       - db_redis
