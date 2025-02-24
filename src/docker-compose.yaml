@@ -1,0 +1,71 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "4321:80"
+    volumes:
+      - ./web:/app
+    environment:
+      BACKEND_SERVER: "http://backend:8081"
+      OLLAMA_SERVER: "http://ollama:11434"
+      OPENAI_API_KEY: "sk-xxxxx"
+      GROQ_API_KEY: "gsk-xxxxx"
+    depends_on:
+      - backend
+    networks:
+      - mynet
+
+  backend:
+    build: ./backend
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./backend:/app
+    environment:
+      HOST: "0.0.0.0"
+      LLM_PROVIDER: groq
+      LLM_MODEL: llama3-70b-8192
+      LLM_API_TOKEN: "your-api-token-here"
+      OLLAMA_SERVER: "http://ollama:11434"
+      REDIS_SERVER: "db_redis"
+      REDIS_PORT: 6379
+    depends_on:
+      - db_redis
+    networks:
+      - mynet
+
+  db_redis:
+    restart: always
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data/redis-data:/data
+    networks:
+      - mynet
+    
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11435:11434"
+    networks:
+      - mynet
+    volumes:
+      - ./ollama:/root/.ollama:rw
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  mynet:
+    driver: bridge
