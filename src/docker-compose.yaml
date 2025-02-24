@@ -8,8 +8,6 @@ services:
     environment:
       BACKEND_SERVER: "http://backend:8081"
       OLLAMA_SERVER: "http://ollama:11434"
-      OPENAI_API_KEY: "sk-xxxxx"
-      GROQ_API_KEY: "gsk-xxxxx"
     depends_on:
       - backend
     networks:
@@ -23,10 +21,10 @@ services:
       - ./backend:/app
     environment:
       HOST: "0.0.0.0"
-      LLM_PROVIDER: groq
-      LLM_MODEL: llama3-70b-8192
-      LLM_API_TOKEN: "your-api-token-here"
       OLLAMA_SERVER: "http://ollama:11434"
+      MONGO_SERVER: "mongodb://db_mongo:27017"
+      INFINITY_SERVER: "infinity"
+      INFINITY_PORT: 23817
       REDIS_SERVER: "db_redis"
       REDIS_PORT: 6379
     depends_on:
@@ -41,6 +39,16 @@ services:
       - "6379:6379"
     volumes:
       - /data/redis-data:/data
+    networks:
+      - mynet
+
+  db_mongo:
+    restart: always
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/mongo-data:/data/db
     networks:
       - mynet
     
@@ -65,6 +73,21 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
+  infinity:
+    image: infiniflow/infinity:nightly
+    container_name: infinity
+    volumes:
+      - /var/infinity/:/var/infinity
+    ulimits:
+      nofile:
+        soft: 500000
+        hard: 500000
+    ports:
+      - "23817:23817"
+    networks:
+      - mynet
+    restart: unless-stopped
 
 networks:
   mynet:
