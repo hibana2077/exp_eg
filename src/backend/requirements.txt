@@ -2,3 +2,5 @@ blacksheep
 numpy
 requests
 uvicorn
+pymongo
+redis[hiredis]

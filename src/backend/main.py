@@ -1,5 +1,6 @@
 import uvicorn
 import os
+import redis
 from datetime import datetime
 from blacksheep import Application, get
 
