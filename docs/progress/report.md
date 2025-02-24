@@ -8,3 +8,4 @@
 ![arch](../assets/arch.png)
 ![main](../assets/screenshot/main-pg.png)
 ![new-kb](../assets/screenshot/new-kb.png)
+![view](../assets/screenshot/view_detail.png)
