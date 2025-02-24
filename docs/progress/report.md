@@ -4,6 +4,7 @@
 
 - [x] 大致確認Tech Stack
 - [x] login, knowledge base 的 layout 完成
+- [x] backend baseline 完成
 
 ![arch](../assets/arch.png)
 ![main](../assets/screenshot/main-pg.png)
