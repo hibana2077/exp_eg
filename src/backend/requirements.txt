@@ -1,4 +1,4 @@
-fastapi
+blacksheep
 numpy
 requests
 uvicorn
