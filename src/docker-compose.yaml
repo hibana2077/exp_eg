@@ -1,4 +1,8 @@
 services:
+  core:
+    build: ./core
+    
+
   web:
     build: ./web
     ports:
