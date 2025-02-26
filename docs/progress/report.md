@@ -15,3 +15,6 @@
 
 - [x] 完成 login 的邏輯
 - [x] 新增 minio 的 docker-compose 設定
+- [x] 嘗試建構 parse 流程
+
+## 2025-02-26
