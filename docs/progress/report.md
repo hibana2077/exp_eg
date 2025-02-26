@@ -10,3 +10,7 @@
 ![main](../assets/screenshot/main-pg.png)
 ![new-kb](../assets/screenshot/new-kb.png)
 ![view](../assets/screenshot/view_detail.png)
+
+## 2025-02-25
+
+- [x] 完成 login 的邏輯
