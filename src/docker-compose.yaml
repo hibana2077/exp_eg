@@ -1,7 +1,14 @@
 services:
   core:
     build: ./core
-    
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./core:/app
+    environment:
+      HOST: "0.0.0.0"
+    networks:
+      - mynet
 
   web:
     build: ./web
@@ -59,7 +66,7 @@ services:
   ollama:
     image: ollama/ollama:latest
     ports:
-      - "11435:11434"
+      - "11434:11434"
     networks:
       - mynet
     volumes:
