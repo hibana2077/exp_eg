@@ -1,1 +1,4 @@
 llama-index
+requests
+fastapi
+uvicorn
