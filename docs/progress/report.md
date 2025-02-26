@@ -14,3 +14,4 @@
 ## 2025-02-25
 
 - [x] 完成 login 的邏輯
+- [x] 新增 minio 的 docker-compose 設定
