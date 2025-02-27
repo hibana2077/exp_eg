@@ -2,3 +2,4 @@ llama-index
 requests
 fastapi
 uvicorn
+docling

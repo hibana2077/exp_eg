@@ -12,6 +12,8 @@ COPY requirements.txt /app/requirements.txt
 
 RUN uv pip install --system --no-cache-dir -r /app/requirements.txt
 
+RUN apt-get install tesseract-ocr libtesseract-dev libleptonica-dev pkg-config -y
+
 COPY . /app
 
 EXPOSE 14514
