@@ -9,6 +9,13 @@ def view_kb_dialog(name:str):
     with tab1:
         st.write(f"Viewing KB: {name}")
         st.write("This is a dummy content")
+        uploaded_files = st.file_uploader(
+            "Upload files", accept_multiple_files=True
+        )
+        for uploaded_file in uploaded_files:
+            # bytes_data = uploaded_file.read()
+            st.write("filename:", uploaded_file.name)
+            # st.write(bytes_data)
 
     with tab2:
         st.write("Retrieval testing")
