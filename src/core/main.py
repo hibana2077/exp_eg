@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import time
+from fastapi import FastAPI, HTTPException
 from pathlib import Path
 
 import tesserocr
