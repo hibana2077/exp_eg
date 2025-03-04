@@ -16,3 +16,7 @@ from docling.datamodel.pipeline_options import (
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.models.tesseract_ocr_model import TesseractOcrOptions
 from docling_core.types.doc import ImageRefMode, PictureItem, TableItem
+
+
+Path("/root/mortis/inf_db").mkdir(parents=True, exist_ok=True)
+Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
