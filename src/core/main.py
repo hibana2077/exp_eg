@@ -48,8 +48,26 @@ def minio_connect_test():
         client.list_buckets()
         return {"status": "success"}
     except Exception as e:
-        return {"status": "error", "message": str(e), "minio_user": MINIO_USER, "minio_password": MINIO_PASSWORD}
+        return {"status": "error", "message": str(e)}
 
+@app.post("/process_file")
+def process_file(bk: str, file: str):
+    try:
+        client = Minio(
+            "minio:9000",
+            access_key=MINIO_USER,
+            secret_key=MINIO_PASSWORD,
+            secure=False,
+        )
+        res = client.get_object(bk, file)
+        with open(f"/root/mortis/temp/{file}", "wb") as f:
+            f.write(res.read())
+        res.close()
+        res.release_conn()
+        time.sleep(5) # Simulate processing time
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":
     
