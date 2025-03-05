@@ -29,6 +29,10 @@ logging.info("Starting FastAPI server...")
 Path("/root/mortis/inf_db").mkdir(parents=True, exist_ok=True)
 Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
 if __name__ == "__main__":
     
     uvicorn.run(app, host=HOST, port=14514, log_level="info")
