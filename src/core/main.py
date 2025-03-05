@@ -3,6 +3,7 @@ import logging
 import os
 import uvicorn
 import time
+from minio import Minio
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
 
