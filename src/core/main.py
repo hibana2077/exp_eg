@@ -30,4 +30,4 @@ if __name__ == "__main__":
     logging.info("Starting FastAPI server...")
     import uvicorn
 
-    uvicorn.run(app, host=HOST, port=8000, log_level="info")
+    uvicorn.run(app, host=HOST, port=14514, log_level="info")
