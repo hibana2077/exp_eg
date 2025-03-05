@@ -7,6 +7,8 @@ services:
       - ./core:/app
     environment:
       HOST: "0.0.0.0"
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     networks:
       - mynet
 
@@ -112,17 +114,18 @@ services:
     restart: unless-stopped
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2025-02-18T16-25-55Z
+    image: quay.io/minio/minio
     container_name: minio
     command: server --console-address ":9001" /data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    expose:
-      - "9000"
-      - "9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - /minio-data:/data
+      - ./minio-config.json:/tmp/.mc/config.json
     networks:
       - mynet
     healthcheck:

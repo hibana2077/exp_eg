@@ -21,6 +21,8 @@ from docling_core.types.doc import ImageRefMode, PictureItem, TableItem
 
 
 HOST = os.getenv("HOST", "127.0.0.1")
+MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
+MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
 
 app = FastAPI()
 
@@ -33,6 +35,21 @@ Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+@app.get("/minio_connect_test")
+def minio_connect_test():
+    try:
+        client = Minio(
+            "minio:9000",
+            access_key=MINIO_USER,
+            secret_key=MINIO_PASSWORD,
+            secure=False,
+        )
+        client.list_buckets()
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": str(e), "minio_user": MINIO_USER, "minio_password": MINIO_PASSWORD}
+
 
 if __name__ == "__main__":
     
