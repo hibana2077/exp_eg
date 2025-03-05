@@ -116,8 +116,8 @@ services:
     container_name: minio
     command: server --console-address ":9001" /data
     environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=never_loses
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     expose:
       - "9000"
       - "9001"
