@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import requests
+from minio import Minio
 from st_comp.new_kb import new_kb_dialog
 from st_comp.kb import view_kb_dialog
 

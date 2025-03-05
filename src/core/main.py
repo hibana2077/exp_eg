@@ -59,12 +59,11 @@ def process_file(bk: str, file: str):
             secret_key=MINIO_PASSWORD,
             secure=False,
         )
-        res = client.get_object(bk, file)
-        with open(f"/root/mortis/temp/{file}", "wb") as f:
-            f.write(res.read())
-        res.close()
-        res.release_conn()
-        time.sleep(5) # Simulate processing time
+        # Download data of an object.
+        client.fget_object(bk, file, "/opt/mortis/temp/" + file)
+        time.sleep(5) # simulate long processing time
+        # remove file
+        os.remove("/opt/mortis/temp/" + file)
         return {"status": "success"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
