@@ -18,6 +18,11 @@ def text_transform(data:dict)->dict:
     }
 
 def save_vec_store(kb_name:str, file_name:str, data:dict):
+    status = {
+        "status": "success",
+        "texts_table_name": file_name.split(".")[0],
+        # "pictures_table_name": file_name.split(".")[0] + "_pictures"
+    }
 
     # Connect to InfinityDB
     SERVER_IP_ADDRESS = os.getenv("INFINITY_HOST", "localhost")
@@ -29,3 +34,10 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     table_name = file_name.split(".")[0]
     texts_table = db_object.create_table(table_name, TEXT_FORMAT)
     for i in range(len(data['texts'])):texts_table.insert([text_transform(data['texts'][i])])
+
+    # Create a table for pictures if needed
+    # ...
+
+    # Close the connection
+    infinity_obj.close()
+    return status
