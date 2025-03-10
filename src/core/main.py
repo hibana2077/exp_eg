@@ -76,13 +76,19 @@ async def process_file(task_queue:dict):
                 "kb_name": kb_name,
                 "files": [],
             }
+            mongo_collection.insert_one(index_info)
+        else:
+            index_info = {
+                "kb_name": kb_name,
+                "files": index_info["files"],
+            }
         for task in task_queue["task_queue"]:
-            kb_name = task["kb_name"]
+            kb_name:str = task["kb_name"]
             file_name = task["file_name"]
             if len(index_info["files"]) != 0:
                 for file in index_info["files"]:
                     if file["file_name"] == file_name:continue # If the file already exists, skip it
-            client.fget_object(kb_name, file_name, "/root/mortis/temp/" + file_name)
+            client.fget_object(kb_name.lower(), file_name, "/root/mortis/temp/" + file_name)
             # Process the file
             # Convert the file to dict
             data = convert(file_name)
