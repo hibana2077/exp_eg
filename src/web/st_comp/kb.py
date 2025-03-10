@@ -56,9 +56,8 @@ def view_kb_dialog(kb_name:str):
                     secret_key=MINIO_PASSWORD,
                     secure=False,
                 )
-        objects = client.list_objects(kb_name)
-        if objects is None:
-            st.write("No objects found")
+        objects = client.list_objects(kb_name.lower())
+        st.write(objects)
         # for obj in objects:
         #     st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
 
