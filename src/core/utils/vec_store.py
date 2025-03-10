@@ -15,8 +15,8 @@ def text_transform(data:dict)->dict:
          "text": data["text"]
     }
 
-def save_vec_store(data:dict):
+def save_vec_store(kb_name:str, data:dict):
     SERVER_IP_ADDRESS = os.getenv("INFINITY_HOST", "localhost")
     INFINITY_PORT = os.getenv("INFINITY_PORT", "23817")
     infinity_obj = infinity.connect(infinity.NetworkAddress(SERVER_IP_ADDRESS, INFINITY_PORT))
-    db_object = infinity.get_database("default_db")
+    db_object = infinity.get_database(kb_name.lower())
