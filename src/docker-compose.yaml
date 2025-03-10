@@ -12,6 +12,8 @@ services:
       INFINITY_HOST: "infinity"
       INFINITY_PORT: 23817
       MONGO_SERVER: "mongodb://db_mongo:27017"
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     networks:
       - mynet
 
