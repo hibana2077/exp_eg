@@ -20,3 +20,4 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     INFINITY_PORT = os.getenv("INFINITY_PORT", "23817")
     infinity_obj = infinity.connect(infinity.NetworkAddress(SERVER_IP_ADDRESS, INFINITY_PORT))
     db_object = infinity.get_database(kb_name.lower())
+    table_name = file_name.split(".")[0]
