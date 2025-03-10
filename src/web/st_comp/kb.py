@@ -56,8 +56,10 @@ def view_kb_dialog(kb_name:str):
                     secure=False,
                 )
         objects = client.list_objects(kb_name)
-        for obj in objects:
-            st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
+        if objects is None:
+            st.write("No objects found")
+        # for obj in objects:
+        #     st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
 
 
     with tab3:
