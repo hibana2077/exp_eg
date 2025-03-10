@@ -26,7 +26,6 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 logging.info("Starting FastAPI server...")
 
-Path("/root/mortis/inf_db").mkdir(parents=True, exist_ok=True)
 Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
 
 @app.get("/")
