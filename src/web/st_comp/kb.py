@@ -18,7 +18,7 @@ def view_kb_dialog(kb_name:str):
     tab1, tab2, tab3, tab4 = st.tabs(["Upload","Database","Retrieval testing","Configuration"])
     with tab1:
         st.write(f"Viewing KB: {kb_name}")
-        st.write("This is a dummy content")
+        st.write("Please Upload your files")
         uploaded_files = st.file_uploader(
             "Upload files", accept_multiple_files=True
         )
