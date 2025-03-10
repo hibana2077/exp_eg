@@ -32,13 +32,15 @@ def view_kb_dialog(kb_name:str):
                     secret_key=MINIO_PASSWORD,
                     secure=False,
                 )
+                found = client.bucket_exists(kb_name.lower())
+                if not found:client.make_bucket(kb_name.lower())
                 # save file to local temp
                 for uploaded_file in uploaded_files:
                     with open(uploaded_file.name, "wb") as f:
                         f.write(uploaded_file.getbuffer())
                     # Upload to Minio
                     client.fput_object(
-                        kb_name, uploaded_file.name, uploaded_file.name,
+                        kb_name.lower(), uploaded_file.name, uploaded_file.name,
                     )
                     os.remove(uploaded_file.name)
                     
