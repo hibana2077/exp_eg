@@ -21,6 +21,9 @@ services:
     environment:
       BACKEND_SERVER: "http://backend:8081"
       OLLAMA_SERVER: "http://ollama:11434"
+      MINIO_SERVER: "minio:9000"
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     depends_on:
       - backend
     networks:
