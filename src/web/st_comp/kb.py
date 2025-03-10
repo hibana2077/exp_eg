@@ -58,7 +58,8 @@ def view_kb_dialog(kb_name:str):
                 )
         objects = client.list_objects(kb_name.lower())
         for obj in objects:
-            st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
+            st.write(dir(obj))
+            # st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
 
 
     with tab3:
