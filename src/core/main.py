@@ -84,6 +84,9 @@ async def process_file(task_queue:dict):
         for task in task_queue["task_queue"]:
             kb_name = task["kb_name"]
             file_name = task["file_name"]
+            if len(index_info["files"]) != 0:
+                for file in index_info["files"]:
+                    if file["file_name"] == file_name:continue # If the file already exists, skip it
             client.fget_object(kb_name, file_name, "/root/mortis/temp/" + file_name)
             # Process the file
             # Convert the file to dict
@@ -100,6 +103,11 @@ async def process_file(task_queue:dict):
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
         # Write index infomation to MongoDB
+        mongo_collection.update_one(
+            {"kb_name": kb_name},
+            {"$set": index_info},
+            upsert=True
+        )
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
