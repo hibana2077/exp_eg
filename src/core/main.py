@@ -65,6 +65,7 @@ async def process_file(task_queue:dict):
         )
         index_info = {
             "kb_name": task_queue["kb_name"],
+            "files": [],
         }
         for task in task_queue["task_queue"]:
             kb_name = task["kb_name"]
@@ -75,6 +76,13 @@ async def process_file(task_queue:dict):
             data = convert(file_name)
             # Save the vector store
             status = save_vec_store(kb_name, file_name, data)
+            # Save the index information
+            index_info["files"].append({
+                "file_name": file_name,
+                "status": status['status'],
+                "texts_table_name": status['texts_table_name'],
+                # "pictures_table_name": status['pictures_table_name'],
+            })
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
         # Write index infomation to MongoDB
