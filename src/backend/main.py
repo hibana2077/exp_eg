@@ -1,6 +1,7 @@
 import os
 import uvicorn
 import redis
+import pymongo
 from fastapi import FastAPI, HTTPException
 from datetime import datetime
 from pydantic import BaseModel
@@ -9,6 +10,7 @@ from pydantic import BaseModel
 HOST = os.getenv("HOST", "127.0.0.1")
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+MONGO_SERVER = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
 
 # Redis 資料庫設定，decode_responses=True 讓我們直接取得字串
 user_db = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
