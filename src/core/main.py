@@ -8,6 +8,9 @@ from minio import Minio
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
 
+from utils.parse import convert
+from utils.vec_store import save_vec_store
+
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
@@ -59,10 +62,13 @@ def process_file(task_queue:list[dict[str,str]]):
             client.fget_object(kb_name, file_name, "/root/mortis/temp/" + file_name)
             # Process the file
             # Here you can add your own processing logic
-
+            # Convert the file to dict
+            data = convert(file_name)
+            # Save the vector store
+            save_vec_store(kb_name, file_name, data)
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
-            # Write index infomation to MongoDB
+        # Write index infomation to MongoDB
     except Exception as e:
         return {"status": "error", "message": str(e)}
 

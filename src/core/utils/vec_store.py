@@ -18,6 +18,11 @@ def text_transform(data:dict)->dict:
     }
 
 def save_vec_store(kb_name:str, file_name:str, data:dict):
+    index_info = {
+        "kb_name": kb_name,
+        "file_name": file_name,
+    }
+
     # Connect to InfinityDB
     SERVER_IP_ADDRESS = os.getenv("INFINITY_HOST", "localhost")
     INFINITY_PORT = os.getenv("INFINITY_PORT", "23817")
