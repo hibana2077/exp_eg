@@ -30,17 +30,17 @@ async def home():
 # 註冊路由
 @app.post("/register")
 async def register(user: dict):
-    if user_db.exists(user.username):
+    if user_db.exists(user.get("username")):
         raise HTTPException(status_code=400, detail="User already exists")
-    user_db.set(user.username, user.password)
+    user_db.set(user.get("username"), user.get("password"))
     return {"status": "success", "message": "User registered successfully"}
 
 # 登入路由
 @app.post("/login")
 async def login(user: dict):
-    if not user_db.exists(user.username):
+    if not user_db.exists(user["username"]):
         raise HTTPException(status_code=400, detail="User does not exist")
-    if user_db.get(user.username) != user.password:
+    if user_db.get(user["username"]) != user["password"]:
         raise HTTPException(status_code=400, detail="Invalid password")
     return {"status": "success", "message": "Login successful"}
 
