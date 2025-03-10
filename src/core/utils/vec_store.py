@@ -1,6 +1,8 @@
 import infinity
 import os
 
+from cfg.table_format import TEXT_FORMAT
+
 def text_transform(data:dict)->dict:
     return {
          "self_ref": data["self_ref"],
