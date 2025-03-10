@@ -14,6 +14,12 @@ from utils.vec_store import save_vec_store
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
+MONGO_SERVER = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
+
+# MongoDB Database Setup
+mongo_client = pymongo.MongoClient(MONGO_SERVER)
+mongo_db = mongo_client["mortis"]
+mongo_collection = mongo_db["index_info"]
 
 app = FastAPI()
 
@@ -63,10 +69,18 @@ async def process_file(task_queue:dict):
             secret_key=MINIO_PASSWORD,
             secure=False,
         )
-        index_info = {
-            "kb_name": task_queue["kb_name"],
-            "files": [],
-        }
+        # index_info = {
+        #     "kb_name": task_queue["kb_name"],
+        #     "files": [],
+        # }
+        # find the kb_name in MongoDB
+        kb_name = task_queue["kb_name"]
+        index_info = mongo_collection.find_one({"kb_name": kb_name})
+        if index_info is None:
+            index_info = {
+                "kb_name": kb_name,
+                "files": [],
+            }
         for task in task_queue["task_queue"]:
             kb_name = task["kb_name"]
             file_name = task["file_name"]
