@@ -3,7 +3,6 @@ import logging
 import os
 import time
 from pathlib import Path
-import infinity_embedded
 
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import FigureElement, InputFormat, Table
@@ -18,7 +17,7 @@ from docling_core.types.doc import ImageRefMode, PictureItem, TableItem
 import tesserocr
 
 
-def convert(file_loc:str):
+def convert(file_loc:str) -> dict:
     pipeline_options = PdfPipelineOptions()
     pipeline_options.images_scale = 2.0
     pipeline_options.generate_page_images = True
@@ -31,3 +30,5 @@ def convert(file_loc:str):
         )
     
     result = converter.convert(file_loc)
+    out = result.document.export_to_dict()
+    return out
