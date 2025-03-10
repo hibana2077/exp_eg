@@ -3,6 +3,7 @@ import logging
 import os
 import uvicorn
 import time
+import pymongo
 from minio import Minio
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
@@ -38,7 +39,7 @@ def minio_connect_test():
         return {"status": "error", "message": str(e)}
 
 @app.post("/process_file")
-def process_file(bk: str, file: str):
+def process_file(task_queue:list[dict[str,str]]):
     try:
         client = Minio(
             "minio:9000",
@@ -47,11 +48,21 @@ def process_file(bk: str, file: str):
             secure=False,
         )
         # Download data of an object.
-        client.fget_object(bk, file, "/opt/mortis/temp/" + file)
-        time.sleep(5) # simulate long processing time
+        # client.fget_object(bk, file, "/opt/mortis/temp/" + file)
+        
         # remove file
-        os.remove("/opt/mortis/temp/" + file)
-        return {"status": "success"}
+        # os.remove("/opt/mortis/temp/" + file)
+        # return {"status": "success"}
+        for task in task_queue:
+            kb_name = task["kb_name"]
+            file_name = task["file_name"]
+            client.fget_object(kb_name, file_name, "/root/mortis/temp/" + file_name)
+            # Process the file
+            # Here you can add your own processing logic
+
+            # Remove file
+            os.remove("/root/mortis/temp/" + file_name)
+            # Write index infomation to MongoDB
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
