@@ -23,3 +23,4 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     infinity_obj = infinity.connect(infinity.NetworkAddress(SERVER_IP_ADDRESS, INFINITY_PORT))
     db_object = infinity.get_database(kb_name.lower())
     table_name = file_name.split(".")[0]
+    texts_table = db_object.create_table(table_name, TEXT_FORMAT)
