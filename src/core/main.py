@@ -42,7 +42,7 @@ def minio_connect_test():
         return {"status": "error", "message": str(e)}
 
 @app.post("/process_file")
-def process_file(task_queue:list[dict[str,str]]):
+async def process_file(task_queue:dict):
     try:
         client = Minio(
             "minio:9000",
@@ -50,13 +50,10 @@ def process_file(task_queue:list[dict[str,str]]):
             secret_key=MINIO_PASSWORD,
             secure=False,
         )
-        # Download data of an object.
-        # client.fget_object(bk, file, "/opt/mortis/temp/" + file)
-        
-        # remove file
-        # os.remove("/opt/mortis/temp/" + file)
-        # return {"status": "success"}
-        for task in task_queue:
+        index_info = {
+            "kb_name": task_queue["kb_name"],
+        }
+        for task in task_queue["task_queue"]:
             kb_name = task["kb_name"]
             file_name = task["file_name"]
             client.fget_object(kb_name, file_name, "/root/mortis/temp/" + file_name)
