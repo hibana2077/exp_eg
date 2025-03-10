@@ -69,10 +69,6 @@ async def process_file(task_queue:dict):
             secret_key=MINIO_PASSWORD,
             secure=False,
         )
-        # index_info = {
-        #     "kb_name": task_queue["kb_name"],
-        #     "files": [],
-        # }
         # find the kb_name in MongoDB
         kb_name = task_queue["kb_name"]
         index_info = mongo_collection.find_one({"kb_name": kb_name})
@@ -108,6 +104,7 @@ async def process_file(task_queue:dict):
             {"$set": index_info},
             upsert=True
         )
+        return {"status": "success", "message": "File processed successfully"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
