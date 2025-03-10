@@ -43,9 +43,25 @@ async def login(user: dict):
 
 @app.post("/new_kb")
 async def new_kb(kb: dict):
-    db = mongo_client["knowledge_base"]
-    collection = db["kb"]
-    collection.insert_one(kb)
+    """
+    {
+        "name": "Knowledge Base Name",
+        "desc": "Knowledge Base Description",
+        "icon": "Knowledge Base Icon",
+        "owner": "Owner Username"
+    }
+    """
+    # check if the knowledge base already exists
+    if mongo_client["knowledge_base"].kb.find_one({"name": kb["name"], "owner": kb["owner"]}):
+        raise HTTPException(status_code=400, detail="Knowledge base already exists")
+    # insert the new knowledge base into MongoDB
+    mongo_client["knowledge_base"].kb.insert_one({
+        "name": kb["name"],
+        "desc": kb["desc"],
+        "icon": kb["icon"],
+        "owner": kb["owner"],
+        "created_at": datetime.utcnow()
+    })
     return {"status": "success", "message": "Knowledge base entry created"}
 
 if __name__ == "__main__":
