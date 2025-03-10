@@ -1,0 +1,21 @@
+import infinity
+import os
+
+def text_transform(data:dict)->dict:
+    return {
+         "self_ref": data["self_ref"],
+         "parent": data["parent"]["$ref"],
+        #  "children": data["children"],
+         "content_layer": data["content_layer"],
+         "label": data["label"],
+         "page": data["prov"][0]["page_no"],
+         "coord": list(data["prov"][0]["bbox"].values())[:4],
+         "coord_origin": data["prov"][0]["bbox"]["coord_origin"],
+         "orig": data["orig"],
+         "text": data["text"]
+    }
+
+def save_vec_store(data:dict):
+    SERVER_IP_ADDRESS = os.getenv("INFINITY_HOST", "localhost")
+    INFINITY_PORT = os.getenv("INFINITY_PORT", "23817")
+    infinity_obj = infinity.connect(infinity.NetworkAddress(SERVER_IP_ADDRESS, INFINITY_PORT))

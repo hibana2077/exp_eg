@@ -7,4 +7,4 @@ qdrant-client
 minio
 tesserocr
 easyocr
-infinity-embedded-sdk==0.6.0.dev3
+infinity-sdk==0.6.0.dev3
