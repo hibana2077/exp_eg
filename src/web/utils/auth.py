@@ -16,12 +16,12 @@ def login(username: str, password: str):
     response = requests.post(url, json=data)
     
     if response.status_code == 200 and response.json().get("status") == "success":
-        return True
+        return (True, response.json().get("message"))
     elif response.status_code == 400:
         error_message = response.json().get("detail")
-        return error_message
+        return (False, error_message)
     else:
-        return None
+        return (None, "Unknown error occurred")
     
 def register(username: str, password: str):
     """
@@ -36,9 +36,9 @@ def register(username: str, password: str):
     response = requests.post(url, json=data)
     
     if response.status_code == 200 and response.json().get("status") == "success":
-        return True
+        return (True, response.json().get("message"))
     elif response.status_code == 400:
         error_message = response.json().get("detail")
-        return error_message
+        return (False, error_message)
     else:
-        return None
+        return (None, "Unknown error occurred")

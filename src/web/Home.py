@@ -2,6 +2,9 @@ import streamlit as st
 import os
 import requests
 from minio import Minio
+
+# Self-defined imports
+from utils.auth import login, register
 from st_comp.new_kb import new_kb_dialog
 from st_comp.kb import view_kb_dialog
 
@@ -29,13 +32,14 @@ if not st.session_state.login:
             password = st.text_input('Password', type='password')
             submit_button = st.form_submit_button(label='Login')
             if submit_button:
-                if username == 'admin' and password == 'admin':
+                login_result = login(username, password)
+                if login_result[0]:
                     st.session_state.login = True
                     st.session_state.username = username
-                    st.success('Login success')
+                    st.success(login_result[1])
                     st.rerun()
                 else:
-                    st.write('Invalid username or password')
+                    st.error(login_result[1])
     
     with tabs[1]:
         # Register 表單
@@ -49,8 +53,11 @@ if not st.session_state.login:
                 if new_password != confirm_password:
                     st.error("Password and Confirm Password do not match.")
                 else:
-                    # 這邊僅示範成功註冊訊息，實際上需要加入儲存使用者資訊的機制
-                    st.success("Registration successful! Please login.")
+                    register_result = register(new_username, new_password)
+                    if register_result[0]:
+                        st.success(register_result[1])
+                    else:
+                        st.error(register_result[1])
 else:
     # 主頁內容
     st.title("💾Knowledge Base")
