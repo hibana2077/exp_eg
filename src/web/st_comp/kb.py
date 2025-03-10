@@ -43,9 +43,8 @@ def view_kb_dialog(kb_name:str):
                     os.remove(uploaded_file.name)
                     
                 uploaded_files = []
-
-            st.success("Upload successful!")
-            st.balloons()
+                st.success("Upload successful!")
+                st.balloons()
 
     with tab2:
         st.write("Database")
