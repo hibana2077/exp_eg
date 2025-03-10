@@ -43,6 +43,19 @@ def minio_connect_test():
 
 @app.post("/process_file")
 async def process_file(task_queue:dict):
+    """
+    payload:
+    {
+        "kb_name": "knowledge_base_name",
+        "task_queue": [
+            {
+                "kb_name": "knowledge_base_name",
+                "file_name": "file_name"
+            },
+            ...
+        ]
+    }
+    """
     try:
         client = Minio(
             "minio:9000",
