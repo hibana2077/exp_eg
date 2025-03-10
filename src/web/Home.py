@@ -60,7 +60,7 @@ if not st.session_state.login:
                         st.error(register_result[1])
 else:
     # 主頁內容
-    st.title("💾Knowledge Base")
+    st.title("💾 Knowledge Base")
     st.divider()
     
     col_l, col_r = st.columns([3, 1])
