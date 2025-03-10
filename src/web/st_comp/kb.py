@@ -2,6 +2,12 @@ import streamlit as st
 import requests
 import os
 
+# Minio
+from minio import Minio
+
+# Self-defined imports
+from utils.size_cal import size_cal
+
 @st.dialog("View Knowledge Base")
 def view_kb_dialog(name:str):
     # Add view KB API
@@ -15,8 +21,11 @@ def view_kb_dialog(name:str):
         for uploaded_file in uploaded_files:
             # bytes_data = uploaded_file.read()
             # st.write("filename:", uploaded_file.name)
-            st.write(f"filename: {uploaded_file.name}, type: {uploaded_file.type}, size: {uploaded_file.size}")
+            st.markdown(f"- filename: {uploaded_file.name}, type: {uploaded_file.type}, size: {size_cal(uploaded_file.size)}")
             # st.write(bytes_data)
+        if len(uploaded_files) > 0:
+            if st.button("Upload"):
+                pass
 
     with tab2:
         st.write("Retrieval testing")
