@@ -15,7 +15,7 @@ MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
 @st.dialog("View Knowledge Base")
 def view_kb_dialog(kb_name:str):
     # Add view KB API
-    tab1, tab2, tab3 = st.tabs(["Dataset","Retrieval testing","Configuration"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Upload","Database","Retrieval testing","Configuration"])
     with tab1:
         st.write(f"Viewing KB: {kb_name}")
         st.write("This is a dummy content")
@@ -27,14 +27,11 @@ def view_kb_dialog(kb_name:str):
         if len(uploaded_files) > 0:
             if st.button("Upload"):
                 client = Minio(
-                    "minio:9000",
+                    MINIO_SERVER,
                     access_key=MINIO_USER,
                     secret_key=MINIO_PASSWORD,
                     secure=False,
                 )
-                # result = client.fput_object(
-                #     "my-bucket", "my-object", "my-filename",
-                # )
                 # save file to local temp
                 for uploaded_file in uploaded_files:
                     with open(uploaded_file.name, "wb") as f:
@@ -44,11 +41,29 @@ def view_kb_dialog(kb_name:str):
                         kb_name, uploaded_file.name, uploaded_file.name,
                     )
                     os.remove(uploaded_file.name)
+                    
+                uploaded_files = []
+
+            st.success("Upload successful!")
+            st.balloons()
 
     with tab2:
+        st.write("Database")
+        client = Minio(
+                    MINIO_SERVER,
+                    access_key=MINIO_USER,
+                    secret_key=MINIO_PASSWORD,
+                    secure=False,
+                )
+        objects = client.list_objects(kb_name)
+        for obj in objects:
+            st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
+
+
+    with tab3:
         st.write("Retrieval testing")
         st.write("This is a dummy content")
 
-    with tab3:
+    with tab4:
         st.write("Configuration")
         st.write("This is a dummy content")
