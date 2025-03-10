@@ -10,7 +10,7 @@ WORKDIR /app
 
 COPY requirements.txt /app/requirements.txt
 
-RUN uv pip install docling --extra-index-url https://download.pytorch.org/whl/cpu
+RUN pip install docling --extra-index-url https://download.pytorch.org/whl/cpu
 
 RUN uv pip install --system --no-cache-dir -r /app/requirements.txt
 
