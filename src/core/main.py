@@ -71,11 +71,10 @@ async def process_file(task_queue:dict):
             file_name = task["file_name"]
             client.fget_object(kb_name, file_name, "/root/mortis/temp/" + file_name)
             # Process the file
-            # Here you can add your own processing logic
             # Convert the file to dict
             data = convert(file_name)
             # Save the vector store
-            save_vec_store(kb_name, file_name, data)
+            status = save_vec_store(kb_name, file_name, data)
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
         # Write index infomation to MongoDB
