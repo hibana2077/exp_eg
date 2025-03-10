@@ -2,7 +2,7 @@ llama-index
 requests
 fastapi
 uvicorn
-docling
+# docling
 qdrant-client
 minio
 tesserocr

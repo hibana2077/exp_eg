@@ -1,4 +1,5 @@
-blacksheep
+fastapi
+pydantic
 numpy
 requests
 uvicorn

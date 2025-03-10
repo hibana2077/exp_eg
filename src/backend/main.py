@@ -1,43 +1,45 @@
-import uvicorn
 import os
+import uvicorn
 import redis
+from fastapi import FastAPI, HTTPException
 from datetime import datetime
-from dataclasses import dataclass
-from blacksheep import Application, FromJSON, FromQuery, get, post
+from pydantic import BaseModel
 
-# Const
+# 常數設定，從環境變數中讀取設定
 HOST = os.getenv("HOST", "127.0.0.1")
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = os.getenv("REDIS_PORT", 6379)
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 
-# REDIS db setup
-user_db = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+# Redis 資料庫設定，decode_responses=True 讓我們直接取得字串
+user_db = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 
-# dataclass
-@dataclass
-class User:
+app = FastAPI()
+
+# 使用 Pydantic 定義使用者模型
+class User(BaseModel):
     username: str
     password: str
 
-app = Application()
-
-@get("/")
+# 首頁路由
+@app.get("/")
 async def home():
-    return f"Hello, World! {datetime.utcnow().isoformat()}"
+    return {"message": f"Hello, World! {datetime.utcnow().isoformat()}"}
 
-@post("/register")
-async def register(user: User = FromJSON()):
+# 註冊路由
+@app.post("/register")
+async def register(user: dict):
     if user_db.exists(user.username):
-        return {"status": "error", "message": "User already exists"}
+        raise HTTPException(status_code=400, detail="User already exists")
     user_db.set(user.username, user.password)
     return {"status": "success", "message": "User registered successfully"}
 
-@post("/login")
-async def login(user: User = FromJSON()):
+# 登入路由
+@app.post("/login")
+async def login(user: dict):
     if not user_db.exists(user.username):
-        return {"status": "error", "message": "User does not exist"}
-    if user_db.get(user.username).decode() != user.password:
-        return {"status": "error", "message": "Invalid password"}
+        raise HTTPException(status_code=400, detail="User does not exist")
+    if user_db.get(user.username) != user.password:
+        raise HTTPException(status_code=400, detail="Invalid password")
     return {"status": "success", "message": "Login successful"}
 
 if __name__ == "__main__":
