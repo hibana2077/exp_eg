@@ -57,9 +57,15 @@ def view_kb_dialog(kb_name:str):
                     secure=False,
                 )
         objects = client.list_objects(kb_name.lower())
+        # Create table headers
+        table_content = "| Filename | Size | Type |\n|----------|------|------|\n"
+
+        # Add each object as a row in the table
         for obj in objects:
-            st.write(dir(obj))
-            # st.markdown(f"- filename: {obj.object_name}, size: {size_cal(obj.size)}")
+            table_content += f"| {obj.object_name} | {size_cal(obj.size)} | {obj.content_type} |\n"
+
+        # Display the complete table
+        st.markdown(table_content)
 
 
     with tab3:
