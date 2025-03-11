@@ -116,6 +116,7 @@ services:
   infinity:
     image: infiniflow/infinity:nightly
     container_name: infinity
+    command: -f /var/infinity/infinity_conf.toml
     volumes:
       - /var/infinity/:/var/infinity
     ulimits:
