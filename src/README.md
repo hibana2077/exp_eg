@@ -14,7 +14,7 @@ Please review the file and change the values accordingly.
 
 ## Auto Script
 
-After setting up the environment variables, you can run the following command to start the server:
+After setting up the environment variables and config, you can run the following command to put config to the right place:
 
 ```bash
 bash ./setup.sh
