@@ -76,9 +76,7 @@ def view_kb_dialog(kb_name:str):
 
             if submit_button:
                 if len(selected_objects) > 0:
-                    for obj_name in selected_objects:
-                        pass
-                        # Add your processing logic here
+                    # Send request to core /process_file
                     st.success("Processing completed!")
                 else:
                     st.warning("Please select at least one object to process.")
