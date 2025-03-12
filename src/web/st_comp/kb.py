@@ -71,7 +71,17 @@ def view_kb_dialog(kb_name:str):
 
         # Form to process selected objects
         with st.form(key='process_form'):
-            pass
+            selected_objects = st.multiselect("Select objects to process", objects_list)
+            submit_button = st.form_submit_button(label='Process Selected Objects')
+
+            if submit_button:
+                if len(selected_objects) > 0:
+                    for obj_name in selected_objects:
+                        pass
+                        # Add your processing logic here
+                    st.success("Processing completed!")
+                else:
+                    st.warning("Please select at least one object to process.")
 
 
     with tab3:
