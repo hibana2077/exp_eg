@@ -8,6 +8,8 @@ from minio import Minio
 # Self-defined imports
 from utils.size_cal import size_cal
 
+CORE_SERVER = os.getenv("CORE_SERVER", "http://localhost:14514")
+BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:8081")
 MINIO_SERVER = os.getenv("MINIO_SERVER", "minio:9000")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
@@ -77,6 +79,16 @@ def view_kb_dialog(kb_name:str):
             if submit_button:
                 if len(selected_objects) > 0:
                     # Send request to core /process_file
+                    payload = {
+                        "kb_name": kb_name,
+                        "task_queue": []
+                    }
+                    for obj in selected_objects:
+                        payload["task_queue"].append({
+                            "kb_name": kb_name,
+                            "file_name": obj
+                        })
+                    # Send request to core
                     st.success("Processing completed!")
                 else:
                     st.warning("Please select at least one object to process.")
