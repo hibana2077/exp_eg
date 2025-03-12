@@ -64,5 +64,56 @@ async def new_kb(kb: dict):
     })
     return {"status": "success", "message": "Knowledge base entry created"}
 
+@app.get("/list_all_kb/{owner_username}")
+async def list_all_kb(owner_username: str):
+    """
+    List all knowledge bases for a specific owner.
+    
+    Parameters:
+    - owner_username: Username of the owner whose knowledge bases to list
+    
+    Returns:
+    - List of knowledge bases owned by the specified user
+    """
+    # Find all knowledge bases belonging to the specified owner
+    kb_list = list(mongo_client["knowledge_base"].kb.find(
+        {"owner": owner_username},
+        {"_id": 0}  # Exclude the MongoDB _id field from the results
+    ))
+    
+    return {
+        "status": "success",
+        "count": len(kb_list),
+        "data": kb_list
+    }
+
+
+@app.get("/get_kb/{owner_username}/{kb_name}")
+async def get_kb(owner_username: str, kb_name: str):
+    """
+    Get a specific knowledge base by owner and name.
+    
+    Parameters:
+    - owner_username: Username of the owner
+    - kb_name: Name of the knowledge base to retrieve
+    
+    Returns:
+    - Knowledge base details if found
+    """
+    # Find the specific knowledge base
+    kb = mongo_client["knowledge_base"].kb.find_one(
+        {"owner": owner_username, "name": kb_name},
+        {"_id": 0}  # Exclude the MongoDB _id field from the results
+    )
+    
+    # If knowledge base doesn't exist, return 404 error
+    if not kb:
+        raise HTTPException(status_code=404, detail="Knowledge base not found")
+    
+    return {
+        "status": "success",
+        "data": kb
+    }
+
 if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=8081)
