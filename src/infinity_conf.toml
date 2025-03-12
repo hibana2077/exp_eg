@@ -5,7 +5,7 @@ version                  = "0.6.0"
 time_zone                = "utc-8"
 # The number of worker threads. Defaults to the number of CPU cores.
 # Range: [1, 16384]
-cpu_limit                = 8
+cpu_limit                = 4
 # The mode in which the server starts. Available options:
 # - `"standalone"`: Start Infinity as a standalone server.
 # - `"admin"`:
