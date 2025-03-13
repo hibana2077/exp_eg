@@ -57,7 +57,7 @@ print_report() {
   echo -e "${BLUE}║ ${CYAN}Resource repository:${NC} $(basename $REPO_URL .git)                ${BLUE}║${NC}"
   echo -e "${BLUE}║ ${CYAN}Time elapsed:${NC} $duration seconds                             ${BLUE}║${NC}"
   echo -e "${BLUE}║ ${CYAN}Status:${NC} ${GREEN}Installation successful${NC}                          ${BLUE}║${NC}"
-  echo -e "${BLUE}║ ${CYAN}Next steps:${NC} Run 'infinity-server --config $INSTALL_DIR/infinity_conf.toml' ${BLUE}║${NC}"
+  echo -e "${BLUE}║ ${CYAN}Next steps:${NC} Run 'docker-compose up -d --build' ${BLUE}║${NC}"
   echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
 }
 
