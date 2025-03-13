@@ -34,6 +34,24 @@ def new_kb_dialog():
     desc = st.text_input("Description")
     icon = st.selectbox("Icon",['📚','📖','📕','📗','📘','📙','📔','📒','📚','📓','📃','📜','📄','📰','🗞️','📑','🔖','🏷️','📎','🖇️','📌','📍','📏','📐','🗂️','📁','📂','🗃️','🗄️','🗑️','🔒','🔓','🔏','🔐','🔑','🗝️','🔨','⛏️','🛠️','🗡️','🔫','🏹','🛡️','🔧','🔩','🗜️','🔗','⛓️','🧰','🧲','🔬','🔭','📡','💉','💊','🚪','🛏️','🛋️','🚽','🚿','🛁','🪒','🧴','🧷','🧹','🧺','🧻','🧼','🧽','🧯','🛒','🚬','🗿','🏧','🚮','🚰','🚹','🚺','🚻','🚼','🚾','🛂','🛃','🛄','🛅','🚸','⛔','🚫','🚳','🚭','🚯','🚱','🚷','📵','🔞'])
     if st.button("Create",key="new_kb_btn"):
-        # Need name validation
-        # Add create new KB API
+        if name == "":
+            st.error("Please enter a name for the new knowledge base.")
+            return
+        if desc == "":
+            st.error("Please enter a description for the new knowledge base.")
+            return
+        if icon == "":
+            st.error("Please select an icon for the new knowledge base.")
+            return
+        data = {
+            "name": name,
+            "desc": desc,
+            "icon": icon,
+            "owner": st.session_state.username
+        }
+        result = new_kb(data)
+        if result:
+            st.success("Knowledge base created successfully!")
+            st.session_state.new_kb = result
+            st.session_state.kb = result
         st.rerun()
