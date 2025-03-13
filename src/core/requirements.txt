@@ -2,7 +2,8 @@ llama-index
 requests
 fastapi
 uvicorn
-# docling
+docling
+pymongo
 qdrant-client
 minio
 tesserocr
