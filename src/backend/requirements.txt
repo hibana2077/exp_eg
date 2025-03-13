@@ -5,3 +5,4 @@ requests
 uvicorn
 pymongo
 redis[hiredis]
+minio
