@@ -72,6 +72,6 @@ else:
             new_container = where.container(key=f'kb_{it}', border=True)
             with new_container:
                 st.markdown(f"## {kb['icon']} {kb['name']}")
-                st.write(kb['description'])
+                st.write(kb['desc'])
                 if st.button('Open', key=f'open_kb_{it}'):
                     view_kb_dialog(kb['name'])
