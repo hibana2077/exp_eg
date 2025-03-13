@@ -2,11 +2,14 @@ import os
 import uvicorn
 import redis
 import pymongo
+from minio import Minio
 from fastapi import FastAPI, HTTPException
 from datetime import datetime
 
 # 常數設定，從環境變數中讀取設定
 HOST = os.getenv("HOST", "127.0.0.1")
+MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
+MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 MONGO_SERVER = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
