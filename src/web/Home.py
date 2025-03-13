@@ -12,15 +12,6 @@ from st_comp.kb import view_kb_dialog
 if 'login' not in st.session_state:
     st.session_state.login = False
 
-demo_kb = [
-    {'name': 'KB1', 'description': 'This is KB1', 'icon': '📚'},
-    {'name': 'KB2', 'description': 'This is KB2', 'icon': '📚'},
-    {'name': 'KB3', 'description': 'This is KB3', 'icon': '📚'},
-    {'name': 'KB4', 'description': 'This is KB4', 'icon': '📚'},
-    {'name': 'KB5', 'description': 'This is KB5', 'icon': '📚'},
-    {'name': 'KB6', 'description': 'This is KB6', 'icon': '📚'},
-]
-
 if not st.session_state.login:
     # 建立 Login 與 Register 兩個 tabs
     tabs = st.tabs(["Login", "Register"])
@@ -74,11 +65,13 @@ else:
             new_kb_dialog()
     
     kb_left, kb_mid, kb_right = st.columns(3)
-    for it, kb in enumerate(demo_kb):
-        where = kb_left if it % 3 == 0 else kb_mid if it % 3 == 1 else kb_right
-        new_container = where.container(key=f'kb_{it}', border=True)
-        with new_container:
-            st.markdown(f"## {kb['icon']} {kb['name']}")
-            st.write(kb['description'])
-            if st.button('Open', key=f'open_kb_{it}'):
-                view_kb_dialog(kb['name'])
+    act_kb = list_all_knowledge_bases(st.session_state.username)
+    if act_kb['count'] > 0:
+        for it, kb in enumerate(act_kb['data']):
+            where = kb_left if it % 3 == 0 else kb_mid if it % 3 == 1 else kb_right
+            new_container = where.container(key=f'kb_{it}', border=True)
+            with new_container:
+                st.markdown(f"## {kb['icon']} {kb['name']}")
+                st.write(kb['description'])
+                if st.button('Open', key=f'open_kb_{it}'):
+                    view_kb_dialog(kb['name'])
