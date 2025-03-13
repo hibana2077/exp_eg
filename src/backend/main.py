@@ -10,12 +10,18 @@ HOST = os.getenv("HOST", "127.0.0.1")
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 MONGO_SERVER = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
+MONGO_INITDB_ROOT_USERNAME = os.getenv("MONGO_INITDB_ROOT_USERNAME", "root")
+MONGO_INITDB_ROOT_PASSWORD = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "example")
 
 # Redis 資料庫設定，decode_responses=True 讓我們直接取得字串
 user_db = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 
 # MongoDB Database Setup
-mongo_client = pymongo.MongoClient(MONGO_SERVER)
+mongo_client = pymongo.MongoClient(
+    MONGO_SERVER,
+    username=MONGO_INITDB_ROOT_USERNAME,
+    password=MONGO_INITDB_ROOT_PASSWORD
+)
 
 app = FastAPI()
 

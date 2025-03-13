@@ -5,6 +5,7 @@ from minio import Minio
 
 # Self-defined imports
 from utils.auth import login, register
+from utils.kb_op import list_all_knowledge_bases
 from st_comp.new_kb import new_kb_dialog
 from st_comp.kb import view_kb_dialog
 
