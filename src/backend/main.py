@@ -26,6 +26,14 @@ mongo_client = pymongo.MongoClient(
     password=MONGO_INITDB_ROOT_PASSWORD
 )
 
+# MinIO 客戶端設定
+minio_client = Minio(
+    "minio:9000",
+    access_key=MINIO_USER,
+    secret_key=MINIO_PASSWORD,
+    secure=False,
+)
+
 app = FastAPI()
 
 # 首頁路由

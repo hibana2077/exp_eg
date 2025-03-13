@@ -75,8 +75,8 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-    volumes:
-      - /data/mongo-data:/data/db
+    # volumes:
+    #   - /data/mongo-data:/data/db
     networks:
       - mynet
     
