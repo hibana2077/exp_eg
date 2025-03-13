@@ -71,15 +71,28 @@ async def new_kb(kb: dict):
     # check if the knowledge base already exists
     if mongo_client["knowledge_base"].kb.find_one({"name": kb["name"], "owner": kb["owner"]}):
         raise HTTPException(status_code=400, detail="Knowledge base already exists")
+    
+    # create a bucket in MinIO using the knowledge base name
+    bucket_name = kb["name"].lower().replace(" ", "_")  # 將空格替換為下劃線並轉為小寫，確保符合 bucket 命名規則
+    try:
+        # 檢查 bucket 是否已存在
+        if not minio_client.bucket_exists(bucket_name):
+            minio_client.make_bucket(bucket_name)
+    except Exception as e:
+        # 如果創建 bucket 失敗，拋出異常
+        raise HTTPException(status_code=500, detail=f"Failed to create MinIO bucket: {str(e)}")
+    
     # insert the new knowledge base into MongoDB
     mongo_client["knowledge_base"].kb.insert_one({
         "name": kb["name"],
         "desc": kb["desc"],
         "icon": kb["icon"],
         "owner": kb["owner"],
+        "bucket_name": bucket_name,  # 儲存 bucket 名稱
         "created_at": datetime.utcnow()
     })
-    return {"status": "success", "message": "Knowledge base entry created"}
+    
+    return {"status": "success", "message": "Knowledge base entry and MinIO bucket created"}
 
 @app.get("/list_all_kb/{owner_username}")
 async def list_all_kb(owner_username: str):
