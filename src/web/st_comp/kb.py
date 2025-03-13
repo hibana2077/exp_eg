@@ -49,7 +49,6 @@ def view_kb_dialog(kb_name:str):
                 uploaded_files = []
                 st.success("Upload successful!")
                 st.balloons()
-                st.rerun()
 
     with tab2:
         st.write("Database")
