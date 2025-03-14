@@ -89,3 +89,55 @@ res_index = texts_table.create_index(
 ---
 
 <!-- _header: Demo -->
+
+### Auto Setup Script
+
+![w:700 center](../../assets/auto_setup_script.png)
+
+---
+
+<!-- _header: Demo -->
+
+### Web UI
+
+![w:900 center](../../assets/login.png)
+
+---
+
+<!-- _header: Demo -->
+
+### Web UI
+
+![w:1000 center](../../assets/homepage.png)
+
+---
+
+<!-- _header: Demo -->
+
+### Web UI
+
+![w:800 center](../../assets/new_kb.png)
+
+---
+
+<!-- _header: Demo -->
+
+### Web UI
+
+![w:900 center](../../assets/created.png)
+
+---
+
+<!-- _header: Demo -->
+
+### Web UI
+
+![w:400 center](../../assets/upload_1.png)
+
+---
+
+<!-- _header: Demo -->
+
+### Web UI
+
+![w:500 center](../../assets/select.png)
