@@ -15,3 +15,8 @@ embedding model: `text-embedding-3-small`
 
 ![sc4](../assets/exp1_3_1.png)
 ![ans3](../assets/ans3.png)
+
+## 這個保險有參加紅利分配嗎？
+
+![sc5](../assets/exp1_4.png)
+![ans4](../assets/ans4.png)
