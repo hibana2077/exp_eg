@@ -45,6 +45,6 @@ source "$HOME/.cargo/env" && print_status "Rust" "$(rustc --version | cut -d ' '
 
 # Install additional Python packages
 echo "Installing Python packages..."
-pip3 install numpy pandas matplotlib tensorflow && print_status "Python packages" "numpy, pandas, matplotlib, tensorflow"
+pip3 install numpy && print_status "Python packages" "numpy"
 
 echo -e "\n${GREEN}All installations completed successfully!${NC}"

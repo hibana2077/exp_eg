@@ -16,38 +16,76 @@ math: katex
 <!-- _header: 大綱 -->
 
 - 前端跟後端的部分功能串接
-- text表格新增 embedding
+- text 表格新增 embedding
+- Hybrid search 測試
 - infinity analyser 的設定
 
 ---
 
-<!-- _header: 難點 -->
+<!-- _header: 遇到的問題 -->
 
-- text1
-- text2
+### infinity analyser 無法使用
 
----
-
-<!-- _header: 数式 -->
-
-$$ I_{xx}=\int\int_Ry^2f(x,y)\cdot{}dydx $$
-
-$$
-f(x) = \int_{-\infty}^\infty
-    \hat f(\xi)\,e^{2 \pi i \xi x}
-    \,d\xi
-$$
-
-こんな感じで数式を書くことができる。もちろんインラインの $\LaTeX$ も使える。  
-ついでに絵文字も使える:smile:
+![w:800 center](../../assets/inf_ana.png)
 
 ---
 
-<!-- _header: 図 -->
+<!-- _header: 遇到的問題 -->
 
-1. まず[このいらすとやのリンク](https://www.irasutoya.com/2018/10/blog-post_723.html)から画像（`kenkyu_woman_seikou.png`）を右クリックでダウンロードしてください。
-2. この Markdown のあるディレクトリの中に `images` という名前のディレクトリを作り、先ほどダウンロードした画像を配置してください。これで準備が整いました。
+### infinity analyser 無法使用
 
-![w:300 center](./images/kenkyu_woman_seikou.png)
+![w:1200 center](../../assets/inf_ana_re.png)
+
+```bash
+git clone https://github.com/infiniflow/resource.git
+mv resource /var/infinity
+```
+
+```py
+idx_name = "test_text_index1"
+res_index = texts_table.create_index(
+        idx_name,
+        infinity_embedded.index.IndexInfo("text", infinity_embedded.index.IndexType.FullText,{"analyzer": "rag"}),
+        infinity_embedded.common.ConflictType.Error,
+    )
+```
 
 ---
+
+<!-- _header: Demo -->
+
+### Hybrid Search
+
+#### 利率是多少
+
+![center](../../assets/exp1_1.png)
+
+---
+
+<!-- _header: Demo -->
+
+#### 匯率風險說明
+
+![w:750 center](../../assets/exp1_2_2.png)
+![w:900 center](../../assets/ans2.png)
+
+---
+<!-- _header: Demo -->
+
+#### 宣告利率是固定利率嗎？
+
+![w:750 center](../../assets/exp1_3_1.png)
+![w:900 center](../../assets/ans3.png)
+
+---
+
+<!-- _header: Demo -->
+
+#### 這個保險有參加紅利分配嗎？
+
+![w:750 center](../../assets/exp1_4.png)
+![w:900 center](../../assets/ans4.png)
+
+---
+
+<!-- _header: Demo -->
