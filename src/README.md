@@ -1,5 +1,14 @@
 # Deployment
 
+## TL;DR
+
+```bash
+cp .env-template .env
+bash ./install_everything.sh
+bash ./setup.bash
+docker-compose up -d --build
+```
+
 ## Environment Variables
 
 Please copy `.env-template` to `.env` and change the values accordingly.
