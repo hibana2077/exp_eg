@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 
 from utils.parse import convert
-from utils.vec_store import save_vec_store
+from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
 
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
@@ -97,11 +97,11 @@ async def process_file(task_queue:dict):
             client.fget_object(kb_name.lower(), file_name, "/root/mortis/temp/" + file_name)
             # Process the file
             # Convert the file to dict
-            file_name = "/root/mortis/temp/" + file_name
             logging.info(f"Processing file: {file_name}")
-            data = convert(file_name)
+            data = convert("/root/mortis/temp/" + file_name)
             # Save the vector store
             status = save_vec_store(kb_name, file_name, data)
+            logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}")
             # Save the index information
             index_info["files"].append({
                 "file_name": file_name,
@@ -110,7 +110,7 @@ async def process_file(task_queue:dict):
                 # "pictures_table_name": status['pictures_table_name'],
             })
             # Remove file
-            os.remove(file_name)
+            os.remove("/root/mortis/temp/" + file_name)
         # Write index infomation to MongoDB
         mongo_collection.update_one(
             {"kb_name": kb_name},
@@ -118,6 +118,21 @@ async def process_file(task_queue:dict):
             upsert=True
         )
         return {"status": "success", "message": "File processed successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+
+@app.get("/list_tables/{kb_name}")
+async def list_tables(kb_name:str):
+    """
+    payload:
+    {
+        "kb_name": "knowledge_base_name"
+    }
+    """
+    try:
+        # tables = list_all_tables(kb_name)
+        tables = list_all_tables_mongo(kb_name)
+        return {"status": "success", "tables": tables}
     except Exception as e:
         return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
 

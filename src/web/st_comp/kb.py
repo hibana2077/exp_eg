@@ -91,16 +91,40 @@ def view_kb_dialog(kb_name:str):
                     # Send request to core
                     res = requests.post(f"{CORE_SERVER}/process_file", json=payload)
                     if res.status_code == 200 and res.json()["status"] == "success":
-                        st.success("Processing started!")
+                        st.success("Processing success!")
                         st.balloons()
                     else:
                         st.error(f"Error: {res.json().get('message', 'Unknown error')}")
                 else:
                     st.warning("Please select at least one object to process.")
 
-
     with tab3:
         st.write("Retrieval testing")
+        # @app.get("/list_tables/{kb_name}")
+        # async def list_tables(kb_name:str):
+        res = requests.get(f"{CORE_SERVER}/list_tables/{kb_name}")
+        if res.json()['status'] != "success":
+            st.error(res.json()['message'])
+            st.stop()
+
+        if len(res.json()['tables']['files']) == 0:
+            st.warning("No tables found.")
+            st.stop()
+
+        tables_list = res.json()['tables']['files'] # key: file_name, status, texts_table_name
+        # Create table headers
+        table_content = "| Filename | Texts Table Name | Status |\n|----------|--------|------------------|\n"
+        # Add each object as a row in the table
+        for obj in tables_list:
+            table_content += f"| {obj['file_name']} | {obj['texts_table_name']} | {obj['status']} |\n"
+        # Display the complete table
+        st.markdown(table_content)
+
+        # Form to Retrieval testing
+        with st.form(key='retrieval_form'):
+            selected_tables = st.multiselect("Select tables to test", [obj['texts_table_name'] for obj in tables_list])
+            query_text = st.text_input("Query text")
+            submit_button = st.form_submit_button(label='Retrieval Testing')
 
     with tab4:
         st.write("Configuration")

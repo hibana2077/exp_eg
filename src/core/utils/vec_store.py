@@ -1,5 +1,6 @@
 import infinity
 import datetime
+import pymongo
 import os
 
 from cfg.table_format import TEXT_FORMAT
@@ -21,7 +22,7 @@ def text_transform(data:dict)->dict:
 def save_vec_store(kb_name:str, file_name:str, data:dict):
     status = {
         "status": "success",
-        "texts_table_name": file_name.split(".")[0] + "_texts",
+        "texts_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_texts",
         # "pictures_table_name": file_name.split(".")[0] + "_pictures"
     }
 
@@ -32,13 +33,21 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     
     # select db
     try:
-        db_object = infinity_obj.get_database(kb_name.lower())
-    except:
-        status["status"] = "error"
+        # Create a database if it doesn't exist
+        # Check if the database already exists
+        res = infinity_obj.list_databases()
+        if kb_name.lower() not in res.db_names:
+            # Create the database
+            db_object = infinity_obj.create_database(kb_name.lower())
+        else:
+            # Connect to the existing database
+            db_object = infinity_obj.get_database(kb_name.lower())
+    except Exception as e:
+        status["status"] = str(e) + " at " + str(e.__traceback__.tb_lineno)
         return status
 
     # Create a table for texts
-    table_name = file_name.split(".")[0] + "_texts"
+    table_name = status["texts_table_name"]
     texts_table = db_object.create_table(table_name, TEXT_FORMAT)
     for i in range(len(data['texts'])):texts_table.insert([text_transform(data['texts'][i])])
 
@@ -65,3 +74,23 @@ def list_all_tables(kb_name:str):
     infinity_obj.disconnect()
     
     return tables
+
+def list_all_tables_mongo(kb_name:str):
+
+    MONGO_SERVER = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
+    MONGO_INITDB_ROOT_USERNAME = os.getenv("MONGO_INITDB_ROOT_USERNAME", "root")
+    MONGO_INITDB_ROOT_PASSWORD = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "example")
+
+    # Connect to MongoDB
+    mongo_client = pymongo.MongoClient(
+        MONGO_SERVER,
+        username=MONGO_INITDB_ROOT_USERNAME,
+        password=MONGO_INITDB_ROOT_PASSWORD
+    )
+    mongo_db = mongo_client["mortis"]
+    mongo_collection = mongo_db["index_info"]
+    
+    # Find the knowledge base by name
+    kb_info = mongo_collection.find_one({"kb_name": kb_name}, {"_id": 0})
+
+    return kb_info

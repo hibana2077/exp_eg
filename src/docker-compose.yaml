@@ -143,7 +143,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - /minio-data:/data
+      - /data/minio-data:/data
       - ./minio-config.json:/tmp/.mc/config.json
     networks:
       - mynet
