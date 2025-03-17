@@ -1,10 +1,3 @@
-# def search(db_name:str,
-#            tables:list[str],
-#            select_col:list[str],
-#            query:str):
-#     """"""
-#     return None
-
 import infinity
 import datetime
 import os
@@ -132,40 +125,3 @@ def search(
               return query.to_pandas()
        else:
               return query.to_list()
-
-
-# # Example usage:
-# def example_usage():
-#     # Sample query vector
-#     query_emb = [0.1, 0.2, 0.3, 0.4]
-#     idx_name = "my_text_index"
-    
-#     # Define search conditions
-#     conditions = {
-#         'dense': [
-#             {'field': 'embedding', 'query': query_emb, 'element_type': 'float', 'metric': 'cosine', 'topn': 3}
-#         ],
-#         'text': [
-#             {'field': 'text', 'query': '利率', 'topn': 3, 'options': {'index_name': idx_name}}
-#         ],
-#         # 'filter': ['year < 2024'],
-#         # 'fusion': {
-#         #     'method': 'match_tensor',
-#         #     'topn': 3,
-#         #     'fusion_params': {
-#         #         'field': 'tensor',
-#         #         'element_type': 'float',
-#         #         'query_tensor': [[0.9, 0.0, 0.0, 0.0], [1.1, 0.0, 0.0, 0.0]]
-#         #     }
-#         # }
-#     }
-    
-#     # Execute search
-#     results = search(
-#         db_name="default_db",
-#         table_name="my_table",
-#         select_cols=["page", "text"],
-#         conditions=conditions
-#     )
-    
-#     return results
