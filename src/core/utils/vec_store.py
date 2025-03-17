@@ -34,10 +34,8 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     try:
         db_object = infinity_obj.get_database(kb_name.lower())
     except:
-        return {
-            "status": "fail",
-            "message": f"Database {kb_name} does not exist."
-        }
+        status["status"] = "error"
+        return status
 
     # Create a table for texts
     table_name = file_name.split(".")[0] + "_texts"
