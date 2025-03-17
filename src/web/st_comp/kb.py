@@ -120,11 +120,32 @@ def view_kb_dialog(kb_name:str):
         # Display the complete table
         st.markdown(table_content)
 
+        # 建立映射關係
+        table_mapping = {obj['texts_table_name']: obj['file_name'] for obj in tables_list}
+        table_mapping_rev = {v: k for k, v in table_mapping.items()}  # 反向映射更簡潔
+
+        # 取得檔案名稱清單
+        file_names = list(table_mapping.values())
+
         # Form to Retrieval testing
         with st.form(key='retrieval_form'):
-            selected_tables = st.multiselect("Select tables to test", [obj['texts_table_name'] for obj in tables_list])
+            selected_files = st.multiselect("Select tables to test", file_names)
+            selected_tables = [table_mapping_rev[file] for file in selected_files]
             query_text = st.text_input("Query text")
+            top_k = st.number_input("Top K", min_value=1, max_value=100, value=5)
             submit_button = st.form_submit_button(label='Retrieval Testing')
+
+            if submit_button:
+                payload = {
+                    "kb_name": kb_name,
+                    "tables": selected_tables,
+                    "select_cols": ["*"],
+                    "conditions": {"text": [{"field": "text", "query": query_text, 'topn': top_k}]},
+                    "limit": top_k,
+                    "return_format": "pd"
+                }
+                # Send request to core
+                res = requests.post(f"{CORE_SERVER}/search", json=payload)
 
     with tab4:
         st.write("Configuration")

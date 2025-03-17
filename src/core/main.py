@@ -7,6 +7,7 @@ import pymongo
 from minio import Minio
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
+from typing import List, Dict, Any, Optional, Union, Tuple
 
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
@@ -132,6 +133,23 @@ async def list_tables(kb_name:str):
     try:
         # tables = list_all_tables(kb_name)
         tables = list_all_tables_mongo(kb_name)
+        return {"status": "success", "tables": tables}
+    except Exception as e:
+        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+
+@app.post("/search")
+async def search(data:dict):
+    """
+    kb_name: str,
+    tables: List[str],
+    select_cols: List[str],
+    conditions: Dict[str, Any] = None,
+    limit: int = 10,
+    return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
+    """
+    try:
+        for table in data["tables"]:continue
+        
         return {"status": "success", "tables": tables}
     except Exception as e:
         return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
