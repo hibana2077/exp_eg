@@ -15,9 +15,15 @@ HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
 MONGO_SERVER = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
+MONGO_INITDB_ROOT_USERNAME = os.getenv("MONGO_INITDB_ROOT_USERNAME", "root")
+MONGO_INITDB_ROOT_PASSWORD = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "example")
 
 # MongoDB Database Setup
-mongo_client = pymongo.MongoClient(MONGO_SERVER)
+mongo_client = pymongo.MongoClient(
+    MONGO_SERVER,
+    username=MONGO_INITDB_ROOT_USERNAME,
+    password=MONGO_INITDB_ROOT_PASSWORD
+)
 mongo_db = mongo_client["mortis"]
 mongo_collection = mongo_db["index_info"]
 
@@ -91,6 +97,8 @@ async def process_file(task_queue:dict):
             client.fget_object(kb_name.lower(), file_name, "/root/mortis/temp/" + file_name)
             # Process the file
             # Convert the file to dict
+            file_name = "/root/mortis/temp/" + file_name
+            logging.info(f"Processing file: {file_name}")
             data = convert(file_name)
             # Save the vector store
             status = save_vec_store(kb_name, file_name, data)
@@ -102,7 +110,7 @@ async def process_file(task_queue:dict):
                 # "pictures_table_name": status['pictures_table_name'],
             })
             # Remove file
-            os.remove("/root/mortis/temp/" + file_name)
+            os.remove(file_name)
         # Write index infomation to MongoDB
         mongo_collection.update_one(
             {"kb_name": kb_name},
@@ -111,7 +119,7 @@ async def process_file(task_queue:dict):
         )
         return {"status": "success", "message": "File processed successfully"}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
 
 if __name__ == "__main__":
     

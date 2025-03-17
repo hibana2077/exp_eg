@@ -94,7 +94,7 @@ def view_kb_dialog(kb_name:str):
                         st.success("Processing started!")
                         st.balloons()
                     else:
-                        st.error("Processing failed!")
+                        st.error(f"Error: {res.json().get('message', 'Unknown error')}")
                 else:
                     st.warning("Please select at least one object to process.")
 
