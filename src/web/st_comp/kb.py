@@ -96,7 +96,6 @@ def view_kb_dialog(kb_name:str):
 
     with tab3:
         st.write("Retrieval testing")
-        st.write("This is a dummy content")
 
     with tab4:
         st.write("Configuration")

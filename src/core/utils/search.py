@@ -4,9 +4,6 @@ import os
 from typing import List, Dict, Any, Optional, Union, Tuple
 import numpy as np
 
-INFINITY_HOST = os.getenv("INFINITY_HOST", "localhost")
-INFINITY_PORT = os.getenv("INFINITY_PORT", 8080)
-
 def search(
     db_name: str,
     table_name: str,
@@ -58,6 +55,8 @@ def search(
        --------
        Search results in the specified format
        """
+       INFINITY_HOST = os.getenv("INFINITY_HOST", "localhost")
+       INFINITY_PORT = os.getenv("INFINITY_PORT", 8080)
        # Initialize connection
        infinity_obj = infinity.connect(infinity.NetworkAddress(INFINITY_HOST, INFINITY_PORT))
        db_obj = infinity_obj.get_database(db_name)

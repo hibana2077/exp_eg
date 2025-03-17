@@ -40,5 +40,22 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     # ...
 
     # Close the connection
-    infinity_obj.close()
+    infinity_obj.disconnect()
     return status
+
+def list_all_tables(kb_name:str):
+    # Connect to InfinityDB
+    SERVER_IP_ADDRESS = os.getenv("INFINITY_HOST", "localhost")
+    INFINITY_PORT = os.getenv("INFINITY_PORT", "23817")
+    infinity_obj = infinity.connect(infinity.NetworkAddress(SERVER_IP_ADDRESS, INFINITY_PORT))
+    
+    # Create a database if it doesn't exist
+    db_object = infinity_obj.get_database(kb_name.lower())
+    
+    # List all tables in the database
+    tables = db_object.list_tables()
+    
+    # Close the connection
+    infinity_obj.disconnect()
+    
+    return tables
