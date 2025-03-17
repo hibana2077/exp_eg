@@ -89,7 +89,12 @@ def view_kb_dialog(kb_name:str):
                             "file_name": obj
                         })
                     # Send request to core
-                    st.success("Processing completed!")
+                    res = requests.post(f"{CORE_SERVER}/process_file", json=payload)
+                    if res.status_code == 200 and res.json()["status"] == "success":
+                        st.success("Processing started!")
+                        st.balloons()
+                    else:
+                        st.error("Processing failed!")
                 else:
                     st.warning("Please select at least one object to process.")
 
