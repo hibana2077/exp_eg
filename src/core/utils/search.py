@@ -13,7 +13,7 @@ def search(
     select_cols: List[str],
     conditions: Dict[str, Any] = None,
     limit: int = 10,
-    return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "raw"
+    return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
 ) -> Any:
        """
        Flexible search function for Infinity DB that supports multiple match conditions.
@@ -119,9 +119,7 @@ def search(
                      )
        
        # Execute and return results in requested format
-       if return_format == "pl":
-              return query.to_pl()
-       elif return_format == "pd":
-              return query.to_pandas()
-       else:
-              return query.to_list()
+       if return_format == "pl":return query.to_pl()
+       elif return_format == "pd":return query.to_pandas()
+       elif return_format == "arrow":return query.to_arrow()
+       else:return query.to_result()
