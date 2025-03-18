@@ -1,4 +1,7 @@
 import infinity
+from infinity.common import ConflictType
+from infinity.index import IndexInfo, IndexType
+
 import datetime
 import os
 from typing import List, Dict, Any, Optional, Union, Tuple
@@ -15,12 +18,13 @@ def indexing(db_name:str,table_name:str):
     index_name = 'text_index_in_' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     res_index = table_obj.create_index(
         index_name,
-        infinity_obj.index.IndexInfo("text", infinity_obj.index.IndexType.FullText,{"analyzer": "rag"}),
-        infinity_obj.common.ConflictType.Error,
+        IndexInfo("text", IndexType.FullText,{"analyzer": "rag"}),
+        ConflictType.Ignore,
     )
     # Close the connection
     infinity_obj.disconnect()
     return index_name
 
 def add_index_into_condiction(condiction, index_name:str):
-    
+    condiction_update = []
+    return condiction_update
