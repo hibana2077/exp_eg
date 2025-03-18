@@ -5,6 +5,7 @@ uvicorn
 docling
 pymongo
 qdrant-client
+polars
 minio
 tesserocr
 easyocr

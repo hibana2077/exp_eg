@@ -100,13 +100,15 @@ def view_kb_dialog(kb_name:str):
 
     with tab3:
         st.write("Retrieval testing")
-        # @app.get("/list_tables/{kb_name}")
-        # async def list_tables(kb_name:str):
         res = requests.get(f"{CORE_SERVER}/list_tables/{kb_name}")
         if res.json()['status'] != "success":
             st.error(res.json()['message'])
             st.stop()
 
+        if res.json()['tables'] is None:
+            st.warning("No tables found.")
+            st.stop()
+        
         if len(res.json()['tables']['files']) == 0:
             st.warning("No tables found.")
             st.stop()
@@ -146,6 +148,12 @@ def view_kb_dialog(kb_name:str):
                 }
                 # Send request to core
                 res = requests.post(f"{CORE_SERVER}/search", json=payload)
+                if res.status_code == 200 and res.json()["status"] == "success":
+                    result = res.json()["tables"]
+                    st.json(result)
+                else:
+                    st.error(f"Error: {res.json().get('message', 'Unknown error')}")
+
 
     with tab4:
         st.write("Configuration")

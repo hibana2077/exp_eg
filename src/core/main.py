@@ -4,11 +4,17 @@ import os
 import uvicorn
 import time
 import pymongo
+
+import pandas as pd
+import numpy as np
+import polars as pl
+
 from minio import Minio
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
 
+from utils.search import search as search_func
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
 
@@ -148,8 +154,36 @@ async def search(data:dict):
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
     """
     try:
-        for table in data["tables"]:continue
-        
+        return_tables = []
+        for table in data["tables"]:
+            result = search_func(
+                db_name=data["kb_name"],
+                table_name=table,
+                select_cols=data["select_cols"],
+                conditions=data["conditions"],
+                limit=data["limit"],
+                return_format=data["return_format"]
+            )
+            # all turn to dict
+            if data["return_format"] == "pl":
+                result = result.to_dict()
+            elif data["return_format"] == "pd":
+                result = result.to_dict()
+            elif data["return_format"] == "arrow":
+                result = result.to_pandas().to_dict()
+            elif data["return_format"] == "raw":
+                result = result
+            else:
+                raise ValueError("Invalid return format")
+            return_tables.append({
+                "table_name": table,
+                "result": result
+            })
+
+        tables = {
+            "kb_name": data["kb_name"],
+            "tables": return_tables
+        }
         return {"status": "success", "tables": tables}
     except Exception as e:
         return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
