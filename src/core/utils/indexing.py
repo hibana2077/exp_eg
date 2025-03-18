@@ -26,5 +26,7 @@ def indexing(db_name:str,table_name:str):
     return index_name
 
 def add_index_into_condiction(condiction, index_name:str):
-    condiction_update = []
-    return condiction_update
+    text_condictions = condiction.get("text", [])
+    for cond in text_condictions:
+        cond['options'] = {'index_name': index_name}
+    return condiction

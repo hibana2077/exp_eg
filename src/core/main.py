@@ -14,6 +14,7 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
 
+from utils.indexing import indexing, add_index_into_condiction
 from utils.search import search as search_func
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
@@ -156,11 +157,19 @@ async def search(data:dict):
     try:
         return_tables = []
         for table in data["tables"]:
+            index_name = indexing(
+                db_name=data["kb_name"],
+                table_name=table
+            )
+            update_condiction = add_index_into_condiction(
+                data["conditions"],
+                index_name
+            )
             result = search_func(
                 db_name=data["kb_name"],
                 table_name=table,
                 select_cols=data["select_cols"],
-                conditions=data["conditions"],
+                conditions=update_condiction,
                 limit=data["limit"],
                 return_format=data["return_format"]
             )
