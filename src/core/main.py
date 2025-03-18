@@ -165,12 +165,12 @@ async def search(data:dict):
                 return_format=data["return_format"]
             )
             # all turn to dict
-            if data["return_format"] == "pl":
+            if data["return_format"] == "pl":# type -> pl.DataFrame
+                result = result.to_dict(as_series=False)
+            elif data["return_format"] == "pd":# type -> pd.DataFrame
                 result = result.to_dict()
-            elif data["return_format"] == "pd":
-                result = result.to_dict()
-            elif data["return_format"] == "arrow":
-                result = result.to_pandas().to_dict()
+            elif data["return_format"] == "arrow":# type -> pyarrow.Table
+                result = result.to_pydict()
             elif data["return_format"] == "raw":
                 result = result
             else:
