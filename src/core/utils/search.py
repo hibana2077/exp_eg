@@ -119,6 +119,6 @@ def search(
        
        # Execute and return results in requested format
        if return_format == "pl":return query.to_pl()
-       elif return_format == "pd":return query.to_pd()
+       elif return_format == "pd":return query.to_df()
        elif return_format == "arrow":return query.to_arrow()
        else:return query.to_result()
