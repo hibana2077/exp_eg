@@ -1,22 +1,22 @@
-print_banner() {
-  local message="${1:-Infinity Installation}"
+# Function to print report
+# Function to print report
+print_report() {
+  local end_time=$(date +%s)
+  local duration=$((end_time - START_TIME))
+  local width=56
   
-  echo -e "${CYAN}________       _____            __________              _____             ${NC}"
-  echo -e "${CYAN}___  __ \_____ __  /______ _    ___  ____/_____________ ___(_)___________ ${NC}"
-  echo -e "${CYAN}__  / / /  __ \`/  __/  __ \`/    __  __/  __  __ \\_  __ \`/_  /__  __ \\  _ \\${NC}"
-  echo -e "${CYAN}_  /_/ // /_/ // /_ / /_/ /     _  /___  _  / / /  /_/ /_  / _  / / /  __/${NC}"
-  echo -e "${CYAN}/_____/ \\__,_/ \\__/ \\__,_/      /_____/  /_/ /_/_\\__, / /_/  /_/ /_/\\___/ ${NC}"
-  echo -e "${CYAN}                                                /____/                    ${NC}"
   echo
-  
-  # Center the message
-  local term_width=$(tput cols 2>/dev/null || echo 80)
-  local msg_length=${#message}
-  local padding=$(( (term_width - msg_length) / 2 ))
-  
-  printf "%${padding}s" ""  # Print padding spaces
-  echo -e "${YELLOW}${BOLD}${message}${NC}"
-  echo
+  echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
+  echo -e "${BLUE}║ ${BOLD}INSTALLATION REPORT$(printf '%*s' $((width-20)) "")${BLUE}║${NC}"
+  echo -e "${BLUE}╠════════════════════════════════════════════════════════════╣${NC}"
+  echo -e "${BLUE}║ ${CYAN}Installation directory:${NC} $INSTALL_DIR$(printf '%*s' $((width-24-${#INSTALL_DIR})) "")${BLUE}║${NC}"
+  echo -e "${BLUE}║ ${CYAN}Configuration:${NC} $(basename $CONFIG_FILE)$(printf '%*s' $((width-15-${#CONFIG_FILE})) "")${BLUE}║${NC}"
+  echo -e "${BLUE}║ ${CYAN}Resource repository:${NC} $(basename $REPO_URL .git)$(printf '%*s' $((width-20-${#REPO_URL}+4)) "")${BLUE}║${NC}"
+  echo -e "${BLUE}║ ${CYAN}Time elapsed:${NC} $duration seconds$(printf '%*s' $((width-15-${#duration}-8)) "")${BLUE}║${NC}"
+  echo -e "${BLUE}║ ${CYAN}Status:${NC} ${GREEN}Installation successful${NC}$(printf '%*s' $((width-8-22)) "")${BLUE}║${NC}"
+  echo -e "${BLUE}║ ${CYAN}Next steps:${NC} Run 'docker-compose up -d --build'$(printf '%*s' $((width-11-33)) "")${BLUE}║${NC}"
+  echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
 }
 
-print_banner "超酷"
+# test function
+print_report

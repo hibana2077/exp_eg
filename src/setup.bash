@@ -60,17 +60,17 @@ print_report() {
   local end_time=$(date +%s)
   local duration=$((end_time - START_TIME))
   
-  echo
-  echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${BLUE}║ ${BOLD}INSTALLATION REPORT${NC}                                        ${BLUE}║${NC}"
-  echo -e "${BLUE}╠════════════════════════════════════════════════════════════╣${NC}"
-  echo -e "${BLUE}║ ${CYAN}Installation directory:${NC} $INSTALL_DIR                        ${BLUE}║${NC}"
-  echo -e "${BLUE}║ ${CYAN}Configuration:${NC} $(basename $CONFIG_FILE)                         ${BLUE}║${NC}"
-  echo -e "${BLUE}║ ${CYAN}Resource repository:${NC} $(basename $REPO_URL .git)                ${BLUE}║${NC}"
-  echo -e "${BLUE}║ ${CYAN}Time elapsed:${NC} $duration seconds                             ${BLUE}║${NC}"
-  echo -e "${BLUE}║ ${CYAN}Status:${NC} ${GREEN}Installation successful${NC}                          ${BLUE}║${NC}"
-  echo -e "${BLUE}║ ${CYAN}Next steps:${NC} Run 'docker-compose up -d --build'                     ${BLUE}║${NC}"
-  echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
+  printf "\n"
+  printf "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}\n"
+  printf "${BLUE}║ ${BOLD}%-56s${BLUE}║${NC}\n" "INSTALLATION REPORT"
+  printf "${BLUE}╠════════════════════════════════════════════════════════════╣${NC}\n"
+  printf "${BLUE}║ ${CYAN}%-15s${NC} %-40s${BLUE}║${NC}\n" "Install dir:" "$INSTALL_DIR"
+  printf "${BLUE}║ ${CYAN}%-15s${NC} %-40s${BLUE}║${NC}\n" "Configuration:" "$(basename $CONFIG_FILE)"
+  printf "${BLUE}║ ${CYAN}%-15s${NC} %-40s${BLUE}║${NC}\n" "Repository:" "$(basename $REPO_URL .git)"
+  printf "${BLUE}║ ${CYAN}%-15s${NC} %-40s${BLUE}║${NC}\n" "Time elapsed:" "$duration seconds"
+  printf "${BLUE}║ ${CYAN}%-15s${NC} ${GREEN}%-40s${NC}${BLUE}║${NC}\n" "Status:" "Installation successful"
+  printf "${BLUE}║ ${CYAN}%-15s${NC} %-40s${BLUE}║${NC}\n" "Next steps:" "Run 'docker-compose up -d --build'"
+  printf "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}\n"
 }
 
 # Start the installation process
