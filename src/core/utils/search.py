@@ -64,7 +64,7 @@ def search(
        
        # Start query with output selection
        query = table_obj.output(select_cols)
-       
+       print(f"Processing query: {db_name}.{table_name}")
        # Apply conditions if provided
        if conditions:
               # Apply dense vector matches

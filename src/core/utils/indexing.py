@@ -21,3 +21,6 @@ def indexing(db_name:str,table_name:str):
     # Close the connection
     infinity_obj.disconnect()
     return index_name
+
+def add_index_into_condiction(condiction, index_name:str):
+    
