@@ -2,6 +2,10 @@ import streamlit as st
 import requests
 import os
 
+import pandas as pd
+import polars as pl
+import numpy as np
+
 # Minio
 from minio import Minio
 
@@ -150,7 +154,13 @@ def view_kb_dialog(kb_name:str):
                 res = requests.post(f"{CORE_SERVER}/search", json=payload)
                 if res.status_code == 200 and res.json()["status"] == "success":
                     result = res.json()["tables"]
-                    st.json(result)
+                    st.success("Retrieval success!")
+                    st.json(result,expanded=False)
+                    for table in result['tables']:
+                        st.write(f"Table: {table['table_name']}")
+                        df = pd.DataFrame(table['result'])
+                        st.dataframe(df)
+                        st.divider()
                 else:
                     st.error(f"Error: {res.json().get('message', 'Unknown error')}")
 
