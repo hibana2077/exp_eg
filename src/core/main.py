@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
 
+from utils.embedding import add_emb_cond
 from utils.indexing import indexing, add_index_into_condiction
 from utils.search import search as search_func
 from utils.parse import convert
@@ -172,6 +173,8 @@ async def search(data:dict):
                 data["conditions"],
                 index_name
             )
+            update_condition = add_emb_cond(update_condition)
+            # search
             result = search_func(
                 db_name=data["kb_name"],
                 table_name=table,
