@@ -10,6 +10,7 @@ import numpy as np
 import polars as pl
 
 from minio import Minio
+from fastembed import TextEmbedding
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
