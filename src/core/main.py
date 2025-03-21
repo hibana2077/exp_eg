@@ -15,7 +15,6 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
 
-from utils.embedding import make_emb
 from utils.indexing import indexing, add_index_into_condiction
 from utils.search import search as search_func
 from utils.parse import convert
@@ -113,8 +112,6 @@ async def process_file(task_queue:dict):
             # Convert the file to dict
             logging.info(f"Processing file: {file_name}")
             data = convert("/root/mortis/temp/" + file_name)
-            # Generate embeddings
-            data = make_emb(data, model_name=EMB_MODEL)
             # Save the vector store
             status = save_vec_store(kb_name, file_name, data)
             logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}")

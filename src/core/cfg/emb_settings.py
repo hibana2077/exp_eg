@@ -1,0 +1,1 @@
+EMB_MODEL = "intfloat/multilingual-e5-large"

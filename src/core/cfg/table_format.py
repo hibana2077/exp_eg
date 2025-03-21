@@ -10,5 +10,5 @@ TEXT_FORMAT = {
     "coord_origin": {"type": "varchar"},          # 儲存座標來源
     "orig": {"type": "varchar"},                 # 原始文字內容
     "text": {"type": "varchar"},                  # 解析後或顯示用的文字內容
-    "embedding": {"type": "vector,1536,float"}, # 儲存嵌入向量
+    "embedding": {"type": "vector,1024,float"}, # 儲存嵌入向量
 }

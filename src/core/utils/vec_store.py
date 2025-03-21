@@ -3,9 +3,14 @@ import datetime
 import pymongo
 import os
 
+from fastembed import TextEmbedding
+
+from cfg.emb_settings import EMB_MODEL
 from cfg.table_format import TEXT_FORMAT
 
 def text_transform(data:dict)->dict:
+    embedding_model = TextEmbedding(model_name=EMB_MODEL)
+    embeddings_list = list(embedding_model.embed(data['text']))
     return {
          "self_ref": data["self_ref"],
          "parent": data["parent"]["$ref"],
@@ -16,7 +21,8 @@ def text_transform(data:dict)->dict:
          "coord": list(data["prov"][0]["bbox"].values())[:4],
          "coord_origin": data["prov"][0]["bbox"]["coord_origin"],
          "orig": data["orig"],
-         "text": data["text"]
+         "text": data["text"],
+         "embedding":embeddings_list[0]
     }
 
 def save_vec_store(kb_name:str, file_name:str, data:dict):
