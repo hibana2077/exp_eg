@@ -20,6 +20,8 @@ from utils.search import search as search_func
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
 
+from cfg.emb_settings import EMB_MODEL
+
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "password")
@@ -166,7 +168,7 @@ async def search(data:dict):
                 db_name=data["kb_name"],
                 table_name=table
             )
-            update_condiction = add_index_into_condiction(
+            update_condition = add_index_into_condiction(
                 data["conditions"],
                 index_name
             )
@@ -174,7 +176,7 @@ async def search(data:dict):
                 db_name=data["kb_name"],
                 table_name=table,
                 select_cols=data["select_cols"],
-                conditions=update_condiction,
+                conditions=update_condition,
                 limit=data["limit"],
                 return_format=data["return_format"]
             )
