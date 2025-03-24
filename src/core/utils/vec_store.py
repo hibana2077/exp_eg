@@ -77,12 +77,17 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
         return status
 
     # Create a table for texts
-    table_name = status["texts_table_name"]
-    texts_table = db_object.create_table(table_name, TEXT_FORMAT)
+    text_table_name = status["texts_table_name"]
+    texts_table = db_object.create_table(text_table_name, TEXT_FORMAT)
     for i in range(len(data['texts'])):texts_table.insert([text_transform(data['texts'][i])])
 
     # Create a table for pictures if needed
-    # ...
+    image_table_name = status["images_table_name"]
+    if data['pictures']:
+        images_table = db_object.create_table(image_table_name, IMAGE_FORMAT)
+        for i in range(len(data['pictures'])):images_table.insert([image_transform(data['pictures'][i])])
+    else:
+        status["images_table_name"] = None
 
     # Close the connection
     infinity_obj.disconnect()
