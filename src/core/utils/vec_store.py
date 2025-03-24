@@ -53,7 +53,7 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
     status = {
         "status": "success",
         "texts_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_texts",
-        # "pictures_table_name": file_name.split(".")[0] + "_pictures"
+        "images_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_images"
     }
 
     # Connect to InfinityDB
