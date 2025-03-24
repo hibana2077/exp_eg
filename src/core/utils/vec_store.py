@@ -2,11 +2,14 @@ import infinity
 import datetime
 import pymongo
 import os
+import base64
 
+# fastembed is a library powered by Qdrant
 from fastembed import TextEmbedding
+from fastembed import ImageEmbedding
 
-from cfg.emb_settings import EMB_MODEL
-from cfg.table_format import TEXT_FORMAT
+from cfg.emb_settings import EMB_MODEL,IMG_EMB_MODEL
+from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT
 
 def text_transform(data:dict)->dict:
     embedding_model = TextEmbedding(model_name=EMB_MODEL)
@@ -14,7 +17,6 @@ def text_transform(data:dict)->dict:
     return {
          "self_ref": data["self_ref"],
          "parent": data["parent"]["$ref"],
-        #  "children": data["children"],
          "content_layer": data["content_layer"],
          "label": data["label"],
          "page": data["prov"][0]["page_no"],
@@ -23,6 +25,28 @@ def text_transform(data:dict)->dict:
          "orig": data["orig"],
          "text": data["text"],
          "embedding":embeddings_list[0]
+    }
+
+def image_transform(data:dict)->dict:
+    encoded = data["image"]["uri"].split(",")[1]
+    image_data = base64.b64decode(encoded)
+    with open("temp.png", "wb") as f:f.write(image_data)
+    img_embedding_model = ImageEmbedding(model_name=IMG_EMB_MODEL)
+    embeddings_list = list(img_embedding_model.embed(["temp.png"]))
+    os.remove("temp.png")
+    return {
+        "self_ref": data["self_ref"],
+        "parent": data["parent"]["$ref"],
+        "content_layer": data["content_layer"],
+        "label": data["label"],
+        "page": data["prov"][0]["page_no"],
+        "coord": list(data["prov"][0]["bbox"].values())[:4],
+        "coord_origin": data["prov"][0]["bbox"]["coord_origin"],
+        "image": encoded,
+        "dpi": data["dpi"],
+        "size": list(data["image"]["size"].values()),
+        "type": data["type"],
+        "embedding":embeddings_list[0]
     }
 
 def save_vec_store(kb_name:str, file_name:str, data:dict):
