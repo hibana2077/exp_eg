@@ -119,16 +119,17 @@ def view_kb_dialog(kb_name:str):
 
         tables_list = res.json()['tables']['files'] # key: file_name, status, texts_table_name
         # Create table headers
-        table_content = "| Filename | Texts Table Name | Status |\n|----------|--------|------------------|\n"
+        table_content = "| Filename | Texts Table Name | Images Table Name | Status |\n|----------|--------|------------------|\n"
         # Add each object as a row in the table
         for obj in tables_list:
-            table_content += f"| {obj['file_name']} | {obj['texts_table_name']} | {obj['status']} |\n"
+            table_content += f"| {obj['file_name']} | {obj['texts_table_name']} | {obj['images_table_name']} | {obj['status']} |\n"
         # Display the complete table
         st.markdown(table_content)
 
         # 建立映射關係
         table_mapping = {obj['texts_table_name']: obj['file_name'] for obj in tables_list}
-        table_mapping_rev = {v: k for k, v in table_mapping.items()}  # 反向映射更簡潔
+        image_table_mapping = {obj['file_name']: obj['images_table_name'] for obj in tables_list}
+        table_mapping_rev = {v: k for k, v in table_mapping.items()}  # reverse mapping
 
         # 取得檔案名稱清單
         file_names = list(table_mapping.values())
@@ -136,9 +137,11 @@ def view_kb_dialog(kb_name:str):
         # Form to Retrieval testing
         with st.form(key='retrieval_form'):
             selected_files = st.multiselect("Select tables to test", file_names)
-            selected_tables = [table_mapping_rev[file] for file in selected_files]
+            # selected_tables = [table_mapping_rev[file] for file in selected_files]
+            selected_tables = [(table_mapping_rev[file], image_table_mapping[file]) for file in selected_files]
             query_text = st.text_input("Query text")
             top_k = st.number_input("Top K", min_value=1, max_value=100, value=5)
+            do_image_search = st.checkbox("Do image search", value=False)
             submit_button = st.form_submit_button(label='Retrieval Testing')
 
             if submit_button:
@@ -147,6 +150,7 @@ def view_kb_dialog(kb_name:str):
                     "tables": selected_tables,
                     "select_cols": ["*"],
                     "conditions": {"text": [{"field": "text", "query": query_text, 'topn': top_k}]},
+                    "do_image_search": do_image_search,
                     "limit": top_k,
                     "return_format": "pd"
                 }

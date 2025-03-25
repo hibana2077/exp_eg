@@ -159,6 +159,7 @@ async def search(data:dict):
     tables: List[str],
     select_cols: List[str],
     conditions: Dict[str, Any] = None,
+    do_image_search: bool = False,
     limit: int = 10,
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
     """
@@ -167,7 +168,7 @@ async def search(data:dict):
         for table in data["tables"]:
             index_name = indexing(
                 db_name=data["kb_name"],
-                table_name=table
+                table_name=table[0]
             )
             update_condition = add_index_into_condiction(
                 data["conditions"],
@@ -177,7 +178,7 @@ async def search(data:dict):
             # search
             result = search_func(
                 db_name=data["kb_name"],
-                table_name=table,
+                table_name=table[0],
                 select_cols=data["select_cols"],
                 conditions=update_condition,
                 limit=data["limit"],
@@ -196,7 +197,7 @@ async def search(data:dict):
             else:
                 raise ValueError("Invalid return format")
             return_tables.append({
-                "table_name": table,
+                "table_name": table[0],
                 "result": result
             })
 
