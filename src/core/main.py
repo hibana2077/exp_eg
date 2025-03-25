@@ -200,7 +200,7 @@ async def search(data:dict):
                 "table_name": table[0],
                 "result": result
             })
-
+            # TODO: add image search
         tables = {
             "kb_name": data["kb_name"],
             "tables": return_tables
