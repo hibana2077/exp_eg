@@ -87,7 +87,7 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
         images_table = db_object.create_table(image_table_name, IMAGE_FORMAT)
         for i in range(len(data['pictures'])):images_table.insert([image_transform(data['pictures'][i])])
     else:
-        status["images_table_name"] = None
+        status["images_table_name"] = ""
 
     # Close the connection
     infinity_obj.disconnect()
