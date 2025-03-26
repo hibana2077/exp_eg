@@ -55,8 +55,6 @@ services:
       # REDIS_HOST: "db_redis"
       # REDIS_PORT: 6379
       DATABASE_URL: "sqlite:////app/data/users.db"
-    depends_on:
-      - db_redis
     networks:
       - mynet
 
