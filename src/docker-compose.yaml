@@ -43,6 +43,7 @@ services:
       - "8081:8081"
     volumes:
       - ./backend:/app
+      - /data/sqllite:/app/data
     environment:
       HOST: "0.0.0.0"
       OLLAMA_SERVER: "http://ollama:11434"
@@ -51,24 +52,25 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       INFINITY_HOST: "infinity"
       INFINITY_PORT: 23817
-      REDIS_HOST: "db_redis"
-      REDIS_PORT: 6379
+      # REDIS_HOST: "db_redis"
+      # REDIS_PORT: 6379
+      DATABASE_URL: "sqlite:////app/data/users.db"
     depends_on:
       - db_redis
     networks:
       - mynet
 
-  db_redis:
-    restart: always
-    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
-    ulimits:
-      memlock: -1
-    # ports:
-    #   - "6379:6379"
-    volumes:
-      - /data/redis-data:/data
-    networks:
-      - mynet
+  # db_redis:
+  #   restart: always
+  #   image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+  #   ulimits:
+  #     memlock: -1
+  #   # ports:
+  #   #   - "6379:6379"
+  #   volumes:
+  #     - /data/redis-data:/data
+  #   networks:
+  #     - mynet
 
   db_mongo:
     restart: always
