@@ -117,6 +117,10 @@ def search(
                             fusion_params=fusion_config.get('fusion_params', {})
                      )
        
+       if len(conditions) > 1:
+              # Apply fusion
+              query = query.fusion('rrf', topn=limit)
+
        # Execute and return results in requested format
        if return_format == "pl":return query.to_pl()
        elif return_format == "pd":return query.to_df()
