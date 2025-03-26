@@ -9,13 +9,22 @@ def add_emb_cond(condition: dict) -> dict:
     embeddings_list = list(embedding_model.embed(condition["text"][0]['query']))
     
     # Add embedding to the condition
-    # condition["embedding"] = embeddings_list[0]
-    condition['dense'].append({
-        'field': 'embedding',
-        'query': embeddings_list[0],
-        'element_type': 'float',
-        'metric': EMB_SEARCH_METRIC,
-        'topn': condition["text"][0]['topn']
-    })
+    if 'dense' not in condition:
+        condition['dense'] = []
+        condition['dense'].append({
+            'field': 'embedding',
+            'query': embeddings_list[0],
+            'element_type': 'float',
+            'metric': EMB_SEARCH_METRIC,
+            'topn': condition["text"][0]['topn']
+        })
+    else:
+        condition['dense'].append({
+            'field': 'embedding',
+            'query': embeddings_list[0],
+            'element_type': 'float',
+            'metric': EMB_SEARCH_METRIC,
+            'topn': condition["text"][0]['topn']
+        })
     
     return condition
