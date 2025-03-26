@@ -1,6 +1,5 @@
 import os
 import uvicorn
-import redis
 import pymongo
 from minio import Minio
 from fastapi import FastAPI, HTTPException, Depends
