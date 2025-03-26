@@ -119,7 +119,7 @@ def view_kb_dialog(kb_name:str):
 
         tables_list = res.json()['tables']['files'] # key: file_name, status, texts_table_name
         # Create table headers
-        table_content = "| Filename | Texts Table Name | Images Table Name | Status |\n|----------|--------|------------------|\n"
+        table_content = "| Filename | Texts Table Name | Images Table Name | Status |\n|----------|--------|--------|------------------|\n"
         # Add each object as a row in the table
         for obj in tables_list:
             table_content += f"| {obj['file_name']} | {obj['texts_table_name']} | {obj['images_table_name']} | {obj['status']} |\n"
