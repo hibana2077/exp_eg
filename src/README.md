@@ -4,7 +4,7 @@
 
 ```bash
 cp .env-template .env
-bash ./install_everything.sh
+bash ./install_everything.sh # or sudo bash ./install_everything.sh
 bash ./setup.bash # or sudo bash ./setup.sh
 docker-compose up -d --build
 ```

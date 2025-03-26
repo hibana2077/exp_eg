@@ -43,8 +43,4 @@ echo "Installing Rust..."
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source "$HOME/.cargo/env" && print_status "Rust" "$(rustc --version | cut -d ' ' -f 2)"
 
-# Install additional Python packages
-echo "Installing Python packages..."
-pip3 install numpy && print_status "Python packages" "numpy"
-
 echo -e "\n${GREEN}All installations completed successfully!${NC}"
