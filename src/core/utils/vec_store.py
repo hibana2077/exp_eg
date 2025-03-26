@@ -43,9 +43,9 @@ def image_transform(data:dict)->dict:
         "coord": list(data["prov"][0]["bbox"].values())[:4],
         "coord_origin": data["prov"][0]["bbox"]["coord_origin"],
         "image": encoded,
-        "dpi": data["dpi"],
+        "dpi": data["image"]["dpi"],
         "size": list(data["image"]["size"].values()),
-        "type": data["type"],
+        "type": data["image"]["mimetype"],
         "embedding":embeddings_list[0]
     }
 
