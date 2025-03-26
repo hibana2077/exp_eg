@@ -24,5 +24,5 @@ IMAGE_FORMAT = {
     "dpi": {"type": "int16"}, # 儲存圖片的 DPI
     "size": {"type": "vector,2,float"}, # 儲存圖片的大小
     "type": {"type": "varchar"}, # 儲存圖片的類型，如 "image/png"
-    "embedding": {"type": "vector,2048,float"}, # 儲存嵌入向量
+    "embedding": {"type": "vector,512,float"}, # 儲存嵌入向量
 }
