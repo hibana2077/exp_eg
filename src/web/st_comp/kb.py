@@ -170,6 +170,7 @@ def view_kb_dialog(kb_name:str):
                             st.write(f"Table: {table['table_name']}")
                             images = table['result']
                             for encoded in images:
+                                st.write(f"Image: {encoded}")
                                 # Decode the image
                                 image_data = base64.b64decode(encoded)
                                 # Display the image
