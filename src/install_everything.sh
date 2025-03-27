@@ -35,12 +35,4 @@ DESTINATION=/usr/bin/docker-compose
 sudo curl -L https://github.com/docker/compose/releases/download/${VERSION}/docker-compose-$(uname -s)-$(uname -m) -o $DESTINATION
 sudo chmod 755 $DESTINATION && print_status "Docker Compose" "${VERSION}"
 
-# Additional installations
-echo "Installing additional packages..."
-
-# Install Rust
-echo "Installing Rust..."
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source "$HOME/.cargo/env" && print_status "Rust" "$(rustc --version | cut -d ' ' -f 2)"
-
 echo -e "\n${GREEN}All installations completed successfully!${NC}"
