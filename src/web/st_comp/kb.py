@@ -169,7 +169,7 @@ def view_kb_dialog(kb_name:str):
                             st.write(f"Table: {table['table_name']}")
                             images = table['result']
                             for image in images:
-                                st.image(image['image'], caption=image['label'], use_column_width=True)
+                                st.image(image, use_column_width=True)
                         st.divider()
                 else:
                     st.error(f"Error: {res.json().get('message', 'Unknown error')}")
