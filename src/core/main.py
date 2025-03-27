@@ -200,8 +200,8 @@ async def search(data:dict):
                 "table_name": table[0],
                 "result": result
             })
-            # TODO: add image search
             if data["do_image_search"]:
+                print("Image search")
                 clip_text_model = TextEmbedding(IMG_CLIP_EMB_MODEL)
                 image_result = search_func(
                     db_name=data["kb_name"],

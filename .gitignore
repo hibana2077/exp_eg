@@ -171,3 +171,5 @@ cython_debug/
 .pypirc
 .DS_Store
 lab/col_names.txt
+docs/exp/text_image/*.png
+docs/exp/text_image/*.pdf
