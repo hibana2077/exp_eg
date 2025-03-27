@@ -169,10 +169,11 @@ def view_kb_dialog(kb_name:str):
                         else:
                             st.write(f"Table: {table['table_name']}")
                             images = table['result']
-                            for image_data in images:
-                                image_pic = base64.b64decode(image_data)
-                                image_np = np.frombuffer(image_pic, np.uint8)
-                                st.image(image=image_np)
+                            for encoded in images:
+                                # Decode the image
+                                image_data = base64.b64decode(encoded)
+                                # Display the image
+                                st.image(image_data)
                         st.divider()
                 else:
                     st.error(f"Error: {res.json().get('message', 'Unknown error')}")
