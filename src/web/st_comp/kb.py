@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import os
+import base64
 
 import pandas as pd
 import polars as pl
@@ -159,11 +160,21 @@ def view_kb_dialog(kb_name:str):
                 if res.status_code == 200 and res.json()["status"] == "success":
                     result = res.json()["tables"]
                     st.success("Retrieval success!")
-                    st.json(result,expanded=False)
+                    # st.json(result,expanded=False)
                     for table in result['tables']:
-                        st.write(f"Table: {table['table_name']}")
-                        df = pd.DataFrame(table['result'])
-                        st.dataframe(df)
+                        if 'image' not in table['table_name']:
+                            st.write(f"Table: {table['table_name']}")
+                            df = pd.DataFrame(table['result'])
+                            st.dataframe(df)
+                        else:
+                            st.write(f"Table: {table['table_name']}")
+                            images = table['result']
+                            # st.json(images, expanded=False)
+                            for encoded in images['image'].values():
+                                # Decode the image
+                                image_data = base64.b64decode(encoded)
+                                # Display the image
+                                st.image(image_data)
                         st.divider()
                 else:
                     st.error(f"Error: {res.json().get('message', 'Unknown error')}")
