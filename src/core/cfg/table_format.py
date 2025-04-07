@@ -26,3 +26,5 @@ IMAGE_FORMAT = {
     "type": {"type": "varchar"}, # 儲存圖片的類型，如 "image/png"
     "embedding": {"type": "vector,512,float"}, # 儲存嵌入向量
 }
+
+TABLE_FORMAT = {}

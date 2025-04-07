@@ -21,7 +21,7 @@ from utils.search import search as search_func
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
 
-from cfg.emb_settings import EMB_MODEL, IMG_EMB_SEARCH_METRIC, IMG_CLIP_EMB_MODEL
+from cfg.emb_settings import IMG_CLIP_EMB_MODEL
 
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
@@ -38,10 +38,6 @@ mongo_client = pymongo.MongoClient(
 )
 mongo_db = mongo_client["mortis"]
 mongo_collection = mongo_db["index_info"]
-
-# EMBEDDING MODEL
-EMB_MODEL = "intfloat/multilingual-e5-large"
-EMB_DIM = 1024
 
 app = FastAPI()
 
