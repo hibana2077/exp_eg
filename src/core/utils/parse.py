@@ -19,9 +19,15 @@ import tesserocr
 
 def convert(file_loc:str) -> dict:
     pipeline_options = PdfPipelineOptions()
+
+    accelerator_options = AcceleratorOptions(
+        num_threads=8, device=AcceleratorDevice.AUTO
+    )
+
     pipeline_options.images_scale = 2.0
     pipeline_options.generate_page_images = True
     pipeline_options.generate_picture_images = True
+    pipeline_options.accelerator_options = accelerator_options
 
     converter = DocumentConverter(
             format_options={
