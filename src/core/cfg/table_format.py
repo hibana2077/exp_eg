@@ -28,7 +28,6 @@ IMAGE_FORMAT = {
 }
 
 TABLE_FORMAT = {
-    "id": {"type": "varchar"},             # 儲存表格的唯一識別碼
     "text": {"type": "varchar"},             # 儲存表格的文字內容
     "embedding": {"type": "vector,1024,float"}, # 儲存嵌入向量
 }

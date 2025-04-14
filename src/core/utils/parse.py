@@ -37,4 +37,7 @@ def convert(file_loc:str) -> dict:
     
     result = converter.convert(file_loc)
     out = result.document.export_to_dict()
-    return out
+    return out, result
+
+def table_convert(file_loc: str) -> dict:
+    return DocumentConverter().convert(source=file_loc).document

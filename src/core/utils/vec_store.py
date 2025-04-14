@@ -4,12 +4,18 @@ import pymongo
 import os
 import base64
 
+# Table
+from transformers import AutoTokenizer
+from docling.chunking import HybridChunker
+
 # fastembed is a library powered by Qdrant
 from fastembed import TextEmbedding
 from fastembed import ImageEmbedding
 
-from cfg.emb_settings import EMB_MODEL,IMG_EMB_MODEL
-from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT
+from cfg.emb_settings import EMB_MODEL,IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS
+from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
+
+from .parse import table_convert
 
 def text_transform(data:dict)->dict:
     embedding_model = TextEmbedding(model_name=EMB_MODEL)
@@ -49,11 +55,20 @@ def image_transform(data:dict)->dict:
         "embedding":embeddings_list[0]
     }
 
-def save_vec_store(kb_name:str, file_name:str, data:dict):
+def table_transform(data)->dict:
+    embedding_model = TextEmbedding(model_name=TABLE_EMB_MODEL)
+    embeddings_list = list(embedding_model.embed(data.text))
+    return {
+        "text": data.text,
+        "embedding": embeddings_list[0]
+    }
+
+def save_vec_store(kb_name:str, file_name:str, data:dict, meta_data)->dict:
     status = {
         "status": "success",
         "texts_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_texts",
-        "images_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_images"
+        "images_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_images",
+        "tables_table_name": "file_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_tables"
     }
 
     # Connect to InfinityDB
@@ -88,6 +103,29 @@ def save_vec_store(kb_name:str, file_name:str, data:dict):
         for i in range(len(data['pictures'])):images_table.insert([image_transform(data['pictures'][i])])
     else:
         status["images_table_name"] = ""
+
+    # Create a table for tables
+    tables_table_name = status["tables_table_name"]
+    if len(meta_data.document.tables): # 0 or > 0
+        export_md = ""
+        for i in range(len(meta_data.document.tables)):export_md += str(meta_data.document.tables[i].export_to_markdown()) + "\n"
+        tmp_md_file = "temp.md"
+        with open(tmp_md_file, "w") as f:f.write(export_md)
+        pure_table_doc = table_convert(tmp_md_file)
+        tokenizer = AutoTokenizer.from_pretrained(TABLE_EMB_MODEL)
+        chunker = HybridChunker(
+            tokenizer=tokenizer,  # instance or model name, defaults to "sentence-transformers/all-MiniLM-L6-v2"
+            max_tokens=TABLE_CHUNK_MAX_TOKENS,  # optional, by default derived from `tokenizer`
+            merge_peers=True,  # optional, defaults to True
+        )
+        chunk_iter = chunker.chunk(dl_doc=pure_table_doc)
+        chunks = list(chunk_iter)
+        tables_table = db_object.create_table(tables_table_name, TABLE_FORMAT)
+        for i in range(len(chunks)):
+            tables_table.insert([table_transform(chunks[i])])
+        os.remove(tmp_md_file)
+    else:
+        status["tables_table_name"] = ""
 
     # Close the connection
     infinity_obj.disconnect()

@@ -110,9 +110,9 @@ async def process_file(task_queue:dict):
             # Process the file
             # Convert the file to dict
             logging.info(f"Processing file: {file_name}")
-            data = convert("/root/mortis/temp/" + file_name)
+            data, meta_data = convert("/root/mortis/temp/" + file_name)
             # Save the vector store
-            status = save_vec_store(kb_name, file_name, data)
+            status = save_vec_store(kb_name, file_name, data, meta_data)
             logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}, images_table_name: {status['images_table_name']}")
             # Save the index information
             index_info["files"].append({
@@ -120,6 +120,7 @@ async def process_file(task_queue:dict):
                 "status": status['status'],
                 "texts_table_name": status['texts_table_name'],
                 "images_table_name": status['images_table_name'],
+                "tables_table_name": status['tables_table_name'],
             })
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
