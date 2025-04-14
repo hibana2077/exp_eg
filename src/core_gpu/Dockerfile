@@ -16,7 +16,7 @@ RUN uv pip install --system --no-cache-dir -r /app/requirements.txt
 
 RUN apt-get install tesseract-ocr libtesseract-dev libleptonica-dev pkg-config -y
 
-COPY . /app
+COPY ../core /app
 
 EXPOSE 14514
 
