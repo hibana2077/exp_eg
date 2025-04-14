@@ -238,7 +238,7 @@ async def search(data:dict):
                     limit=data["limit"],
                     return_format=data["return_format"]
                 )
-                result = result[2]
+                result = result[0]
                 # all turn to dict
                 if data["return_format"] == "pl":# type -> pl.DataFrame
                     result = result.to_dict(as_series=False)
