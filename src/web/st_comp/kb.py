@@ -12,6 +12,7 @@ from minio import Minio
 
 # Self-defined imports
 from utils.size_cal import size_cal
+from utils.llm_completed import llm_completion
 
 CORE_SERVER = os.getenv("CORE_SERVER", "http://localhost:14514")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:8081")
@@ -130,6 +131,7 @@ def view_kb_dialog(kb_name:str):
         # 建立映射關係
         table_mapping = {obj['texts_table_name']: obj['file_name'] for obj in tables_list}
         image_table_mapping = {obj['file_name']: obj['images_table_name'] for obj in tables_list}
+        tables_table_mapping = {obj['file_name']: obj['tables_table_name'] for obj in tables_list}
         table_mapping_rev = {v: k for k, v in table_mapping.items()}  # reverse mapping
 
         # 取得檔案名稱清單
@@ -139,7 +141,7 @@ def view_kb_dialog(kb_name:str):
         with st.form(key='retrieval_form'):
             selected_files = st.multiselect("Select tables to test", file_names)
             # selected_tables = [table_mapping_rev[file] for file in selected_files]
-            selected_tables = [(table_mapping_rev[file], image_table_mapping[file]) for file in selected_files]
+            selected_tables = [(table_mapping_rev[file], image_table_mapping[file], tables_table_mapping[file]) for file in selected_files]
             query_text = st.text_input("Query text")
             top_k = st.number_input("Top K", min_value=1, max_value=100, value=5)
             do_image_search = st.checkbox("Do image search", value=False)
@@ -161,11 +163,14 @@ def view_kb_dialog(kb_name:str):
                     result = res.json()["tables"]
                     st.success("Retrieval success!")
                     # st.json(result,expanded=False)
+                    rag_data_text = ""
                     for table in result['tables']:
                         if 'image' not in table['table_name']:
                             st.write(f"Table: {table['table_name']}")
                             df = pd.DataFrame(table['result'])
                             st.dataframe(df)
+                            for i in range(len(df)):
+                                rag_data_text += f"{df['text'][i]}\n"
                         else:
                             st.write(f"Table: {table['table_name']}")
                             images = table['result']
@@ -176,6 +181,10 @@ def view_kb_dialog(kb_name:str):
                                 # Display the image
                                 st.image(image_data)
                         st.divider()
+                    llm_result = llm_completion(rag_data_text, query_text)
+                    st.write("LLM Simulation Result:")
+                    message = st.chat_message("assistant")
+                    message.write(llm_result)
                 else:
                     st.error(f"Error: {res.json().get('message', 'Unknown error')}")
 

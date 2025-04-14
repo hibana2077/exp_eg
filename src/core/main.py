@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import pprint
 import uvicorn
 import time
 import pymongo
@@ -21,7 +22,7 @@ from utils.search import search as search_func
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
 
-from cfg.emb_settings import IMG_CLIP_EMB_MODEL
+from cfg.emb_settings import IMG_CLIP_EMB_MODEL, IMG_EMB_SEARCH_METRIC
 
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
@@ -110,9 +111,9 @@ async def process_file(task_queue:dict):
             # Process the file
             # Convert the file to dict
             logging.info(f"Processing file: {file_name}")
-            data = convert("/root/mortis/temp/" + file_name)
+            data, meta_data = convert("/root/mortis/temp/" + file_name)
             # Save the vector store
-            status = save_vec_store(kb_name, file_name, data)
+            status = save_vec_store(kb_name, file_name, data, meta_data)
             logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}, images_table_name: {status['images_table_name']}")
             # Save the index information
             index_info["files"].append({
@@ -120,6 +121,7 @@ async def process_file(task_queue:dict):
                 "status": status['status'],
                 "texts_table_name": status['texts_table_name'],
                 "images_table_name": status['images_table_name'],
+                "tables_table_name": status['tables_table_name'],
             })
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
@@ -158,10 +160,31 @@ async def search(data:dict):
     do_image_search: bool = False,
     limit: int = 10,
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
+
+    Json Example:
+    ```python
+    {
+        "kb_name": "knowledge_base_name",
+        "tables": [
+            ["texts_table_name", "images_table_name", "tables_table_name"],
+            ...
+        ],
+        "select_cols": ["*"],
+        "conditions": { #for all tables
+            "text": [
+                {"field": "text", "query": "query_text", 'topn': 10}
+            ]
+        },
+        "do_image_search": true,
+        "limit": 10,
+        "return_format": "pd"
+    }
+    ```
     """
     try:
         return_tables = []
         for table in data["tables"]:
+            # Text data
             index_name = indexing(
                 db_name=data["kb_name"],
                 table_name=table[0]
@@ -192,10 +215,47 @@ async def search(data:dict):
                 result = result
             else:
                 raise ValueError("Invalid return format")
-            return_tables.append({
-                "table_name": table[0],
-                "result": result
-            })
+            # Table data
+            if table[2] != "":
+                return_tables.append({
+                    "table_name": table[2],
+                    "result": result
+                })
+                index_name = indexing(
+                    db_name=data["kb_name"],
+                    table_name=table[2]
+                )
+                update_condition = add_index_into_condiction(
+                    data["conditions"],
+                    index_name
+                )
+                update_condition = add_emb_cond(update_condition)
+                # search
+                result = search_func(
+                    db_name=data["kb_name"],
+                    table_name=table[2],
+                    select_cols=data["select_cols"],
+                    conditions=update_condition,
+                    limit=data["limit"],
+                    return_format=data["return_format"]
+                )
+                result = result[0]
+                # all turn to dict
+                if data["return_format"] == "pl":# type -> pl.DataFrame
+                    result = result.to_dict(as_series=False)
+                elif data["return_format"] == "pd":# type -> pd.DataFrame
+                    result = result.to_dict()
+                elif data["return_format"] == "arrow":# type -> pyarrow.Table
+                    result = result.to_pydict()
+                elif data["return_format"] == "raw":
+                    result = result
+                else:
+                    raise ValueError("Invalid return format")
+                return_tables.append({
+                    "table_name": table[2],
+                    "result": result
+                })
+            # image data
             if data["do_image_search"]:
                 print("Image search")
                 clip_text_model = TextEmbedding(IMG_CLIP_EMB_MODEL)
@@ -209,7 +269,7 @@ async def search(data:dict):
                                 "field": "embedding",
                                 "query": list(clip_text_model.embed(data["conditions"]["text"][0]['query']))[0],
                                 "element_type": "float",
-                                "metric": "ip",
+                                "metric": IMG_EMB_SEARCH_METRIC,
                                 "topn": data["limit"]
                             }
                         ]

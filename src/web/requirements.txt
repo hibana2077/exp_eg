@@ -4,3 +4,4 @@ requests
 minio
 pandas
 polars
+openai
