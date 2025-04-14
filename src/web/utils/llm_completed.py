@@ -16,7 +16,7 @@ def llm_completion(additional_text:str, question:str)->str:
         },
         extra_body={},
         # model="moonshotai/kimi-vl-a3b-thinking:free",
-        model="google/gemini-2.5-pro-exp-03-25",
+        model="google/gemini-2.5-pro-exp-03-25:free",
         # model="mistralai/mistral-nemo",
         messages=[
             {
