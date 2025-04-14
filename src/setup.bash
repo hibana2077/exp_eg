@@ -14,7 +14,7 @@ INSTALL_DIR="/var/infinity"
 REPO_URL="https://github.com/infiniflow/resource.git"
 CONFIG_FILE="./infinity_conf.toml"
 START_TIME=$(date +%s)
-BANNER_TEXT="Data Empire Installation"  # Custom banner text - change this as needed
+BANNER_TEXT="Made by DDT,Cathay"  # Custom banner text - change this as needed
 
 # Function to print fancy banner with custom message
 print_banner() {
