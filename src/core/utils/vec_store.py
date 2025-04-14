@@ -18,7 +18,7 @@ from fastembed import ImageEmbedding
 from cfg.emb_settings import EMB_MODEL,IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS
 from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
 
-from .parse import table_convert
+from .parse import table_convert, merge_adjacent_tables
 
 def text_transform(data:dict)->dict:
     embedding_model = TextEmbedding(model_name=EMB_MODEL)
@@ -110,19 +110,7 @@ def save_vec_store(kb_name:str, file_name:str, data:dict, meta_data)->dict:
     # Create a table for tables
     tables_table_name = status["tables_table_name"]
     if len(meta_data.document.tables): # 0 or > 0
-        all_tables = []
-        for i in range(len(meta_data.document.tables)):
-            table_df = meta_data.document.tables[i].export_to_dataframe()
-
-            # If the table has no special index value and the number of rows is the same as the previous table, merge them
-            if all_tables and list(table_df.columns.values) == list(range(len(table_df.columns))) and len(all_tables[-1].columns) == len(table_df.columns):
-                unify_columns = list(all_tables[-1].columns)
-                table_df.columns = unify_columns
-
-                table_df = pd.concat([all_tables[-1], table_df])
-                all_tables.pop()
-
-            all_tables.append(table_df)
+        all_tables = merge_adjacent_tables(meta_data)
         export_md = ""
         for i in range(len(all_tables)):export_md += str(all_tables[i].to_markdown()) + "\n"
         tmp_md_file = "temp.md"
