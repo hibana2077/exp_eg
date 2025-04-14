@@ -12,6 +12,7 @@ from minio import Minio
 
 # Self-defined imports
 from utils.size_cal import size_cal
+from utils.llm_completed import llm_completion
 
 CORE_SERVER = os.getenv("CORE_SERVER", "http://localhost:14514")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:8081")
@@ -162,11 +163,14 @@ def view_kb_dialog(kb_name:str):
                     result = res.json()["tables"]
                     st.success("Retrieval success!")
                     # st.json(result,expanded=False)
+                    rag_data_text = ""
                     for table in result['tables']:
                         if 'image' not in table['table_name']:
                             st.write(f"Table: {table['table_name']}")
                             df = pd.DataFrame(table['result'])
                             st.dataframe(df)
+                            for i in range(len(df)):
+                                rag_data_text += f"{df['text'][i]}\n"
                         else:
                             st.write(f"Table: {table['table_name']}")
                             images = table['result']
@@ -177,6 +181,10 @@ def view_kb_dialog(kb_name:str):
                                 # Display the image
                                 st.image(image_data)
                         st.divider()
+                    llm_result = llm_completion(rag_data_text, query_text)
+                    st.write("LLM Simulation Result:")
+                    message = st.chat_message("assistant")
+                    message.write(llm_result)
                 else:
                     st.error(f"Error: {res.json().get('message', 'Unknown error')}")
 
