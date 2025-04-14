@@ -3,6 +3,9 @@ import datetime
 import pymongo
 import os
 import base64
+import pandas as pd
+import polars as pl
+import numpy as np
 
 # Table
 from transformers import AutoTokenizer
@@ -107,8 +110,21 @@ def save_vec_store(kb_name:str, file_name:str, data:dict, meta_data)->dict:
     # Create a table for tables
     tables_table_name = status["tables_table_name"]
     if len(meta_data.document.tables): # 0 or > 0
+        all_tables = []
+        for i in range(len(meta_data.document.tables)):
+            table_df = meta_data.document.tables[i].export_to_dataframe()
+
+            # If the table has no special index value and the number of rows is the same as the previous table, merge them
+            if all_tables and list(table_df.columns.values) == list(range(len(table_df.columns))) and len(all_tables[-1].columns) == len(table_df.columns):
+                unify_columns = list(all_tables[-1].columns)
+                table_df.columns = unify_columns
+
+                table_df = pd.concat([all_tables[-1], table_df])
+                all_tables.pop()
+
+            all_tables.append(table_df)
         export_md = ""
-        for i in range(len(meta_data.document.tables)):export_md += str(meta_data.document.tables[i].export_to_markdown()) + "\n"
+        for i in range(len(all_tables)):export_md += str(all_tables[i].to_markdown()) + "\n"
         tmp_md_file = "temp.md"
         with open(tmp_md_file, "w") as f:f.write(export_md)
         pure_table_doc = table_convert(tmp_md_file)
