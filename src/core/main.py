@@ -160,12 +160,30 @@ async def search(data:dict):
     do_image_search: bool = False,
     limit: int = 10,
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
+
+    Example:
+    ```json
+    {
+        "kb_name": "knowledge_base_name",
+        "tables": [
+            ["texts_table_name", "images_table_name", "tables_table_name"]
+        ],
+        "select_cols": ["*"],
+        "conditions": {
+            "text": [
+                {"field": "text", "query": "query_text", 'topn': 10}
+            ]
+        },
+        "do_image_search": true,
+        "limit": 10,
+        "return_format": "pd"
+    }
+    ```
     """
     try:
         return_tables = []
         for table in data["tables"]:
-            print(table[0])
-            pprint.pprint(table)
+            # Text data
             index_name = indexing(
                 db_name=data["kb_name"],
                 table_name=table[0]
@@ -196,10 +214,47 @@ async def search(data:dict):
                 result = result
             else:
                 raise ValueError("Invalid return format")
-            return_tables.append({
-                "table_name": table[0],
-                "result": result
-            })
+            # Table data
+            if table[2] != "":
+                return_tables.append({
+                    "table_name": table[2],
+                    "result": result
+                })
+                index_name = indexing(
+                    db_name=data["kb_name"],
+                    table_name=table[2]
+                )
+                update_condition = add_index_into_condiction(
+                    data["conditions"],
+                    index_name
+                )
+                update_condition = add_emb_cond(update_condition)
+                # search
+                result = search_func(
+                    db_name=data["kb_name"],
+                    table_name=table[2],
+                    select_cols=data["select_cols"],
+                    conditions=update_condition,
+                    limit=data["limit"],
+                    return_format=data["return_format"]
+                )
+                result = result[2]
+                # all turn to dict
+                if data["return_format"] == "pl":# type -> pl.DataFrame
+                    result = result.to_dict(as_series=False)
+                elif data["return_format"] == "pd":# type -> pd.DataFrame
+                    result = result.to_dict()
+                elif data["return_format"] == "arrow":# type -> pyarrow.Table
+                    result = result.to_pydict()
+                elif data["return_format"] == "raw":
+                    result = result
+                else:
+                    raise ValueError("Invalid return format")
+                return_tables.append({
+                    "table_name": table[2],
+                    "result": result
+                })
+            # image data
             if data["do_image_search"]:
                 print("Image search")
                 clip_text_model = TextEmbedding(IMG_CLIP_EMB_MODEL)
