@@ -163,6 +163,7 @@ async def search(data:dict):
     try:
         return_tables = []
         for table in data["tables"]:
+            print(table[0])
             index_name = indexing(
                 db_name=data["kb_name"],
                 table_name=table[0]
