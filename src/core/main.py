@@ -161,15 +161,16 @@ async def search(data:dict):
     limit: int = 10,
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
 
-    Example:
-    ```json
+    Json Example:
+    ```python
     {
         "kb_name": "knowledge_base_name",
         "tables": [
-            ["texts_table_name", "images_table_name", "tables_table_name"]
+            ["texts_table_name", "images_table_name", "tables_table_name"],
+            ...
         ],
         "select_cols": ["*"],
-        "conditions": {
+        "conditions": { #for all tables
             "text": [
                 {"field": "text", "query": "query_text", 'topn': 10}
             ]
