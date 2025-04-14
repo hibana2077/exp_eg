@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import pprint
 import uvicorn
 import time
 import pymongo
@@ -164,6 +165,7 @@ async def search(data:dict):
         return_tables = []
         for table in data["tables"]:
             print(table[0])
+            pprint.pprint(table)
             index_name = indexing(
                 db_name=data["kb_name"],
                 table_name=table[0]
