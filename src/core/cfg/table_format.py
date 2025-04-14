@@ -27,4 +27,7 @@ IMAGE_FORMAT = {
     "embedding": {"type": "vector,512,float"}, # 儲存嵌入向量
 }
 
-TABLE_FORMAT = {}
+TABLE_FORMAT = {
+    "text": {"type": "varchar"},             # 儲存表格的文字內容
+    "embedding": {"type": "vector,1024,float"}, # 儲存嵌入向量
+}
