@@ -130,6 +130,7 @@ def view_kb_dialog(kb_name:str):
         # 建立映射關係
         table_mapping = {obj['texts_table_name']: obj['file_name'] for obj in tables_list}
         image_table_mapping = {obj['file_name']: obj['images_table_name'] for obj in tables_list}
+        tables_table_mapping = {obj['file_name']: obj['tables_table_name'] for obj in tables_list}
         table_mapping_rev = {v: k for k, v in table_mapping.items()}  # reverse mapping
 
         # 取得檔案名稱清單
@@ -139,7 +140,7 @@ def view_kb_dialog(kb_name:str):
         with st.form(key='retrieval_form'):
             selected_files = st.multiselect("Select tables to test", file_names)
             # selected_tables = [table_mapping_rev[file] for file in selected_files]
-            selected_tables = [(table_mapping_rev[file], image_table_mapping[file]) for file in selected_files]
+            selected_tables = [(table_mapping_rev[file], image_table_mapping[file], tables_table_mapping[file]) for file in selected_files]
             query_text = st.text_input("Query text")
             top_k = st.number_input("Top K", min_value=1, max_value=100, value=5)
             do_image_search = st.checkbox("Do image search", value=False)
