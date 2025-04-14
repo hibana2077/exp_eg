@@ -1,7 +1,7 @@
 from openai import OpenAI
 import os
 
-API_KEY = os.getenv("OPENAI_API_KEY", "sk-")
+API_KEY = os.getenv("OPENROUTE_API_KEY", "sk-")
 
 def llm_completion(additional_text:str, question:str)->str:
     client = OpenAI(
