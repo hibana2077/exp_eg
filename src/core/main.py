@@ -51,6 +51,26 @@ Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/health")
+def health_check():
+    """
+    Health check endpoint
+    """
+    try:
+        # Check MongoDB connection
+        mongo_client.admin.command('ping')
+        # Check Minio connection
+        client = Minio(
+            "minio:9000",
+            access_key=MINIO_USER,
+            secret_key=MINIO_PASSWORD,
+            secure=False,
+        )
+        client.list_buckets()
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.get("/minio_connect_test")
 def minio_connect_test():
     try:
