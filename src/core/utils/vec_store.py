@@ -112,7 +112,7 @@ def save_vec_store(kb_name:str, file_name:str, data:dict, meta_data)->dict:
     if len(meta_data.document.tables): # 0 or > 0
         all_tables = merge_adjacent_tables(meta_data)
         export_md = ""
-        for i in range(len(all_tables)):export_md += str(all_tables[i].to_markdown()) + "\n"
+        for i in range(len(all_tables)):export_md += str(all_tables[i].to_markdown(index=False)) + "\n"
         tmp_md_file = "temp.md"
         with open(tmp_md_file, "w") as f:f.write(export_md)
         pure_table_doc = table_convert(tmp_md_file)
