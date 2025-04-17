@@ -173,3 +173,5 @@ cython_debug/
 lab/col_names.txt
 docs/exp/text_image/*.png
 docs/exp/text_image/*.pdf
+lab/lab.md
+lab/lab.pdf
