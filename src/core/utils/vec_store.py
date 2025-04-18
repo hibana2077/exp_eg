@@ -113,7 +113,7 @@ class VecStore:
         tables = []
         if getattr(meta_data.document, "tables", None):
             all_tabs = merge_adjacent_tables(meta_data)
-            md = "\n".join(tbl.to_markdown(index=False) for tbl in all_tabs)
+            md = "\n\n\n\n".join(tbl.to_markdown(index=False) for tbl in all_tabs)
             pure_doc = table_convert(md)
             chunks = list(self.chunker.chunk(dl_doc=pure_doc))
             tables = [self.table_transform(c) for c in chunks]
