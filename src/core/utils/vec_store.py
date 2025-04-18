@@ -2,6 +2,7 @@ import os
 import datetime
 import base64
 import io
+import pprint
 from tempfile import NamedTemporaryFile
 import infinity  # type: ignore
 import pymongo
@@ -99,6 +100,7 @@ class VecStore:
         }
         # Texts
         texts = [self.text_transform(t) for t in data.get("texts", [])]
+        pprint.pprint(texts[:3])
         tbl_txt = self.db.create_table(self.texts_table_name, TEXT_FORMAT)
         if texts:
             tbl_txt.insert(texts)
