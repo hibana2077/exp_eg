@@ -29,8 +29,8 @@ def llm_completion(additional_text:str, question:str, max_retries=3)->str:
                         "content": [
                             {
                                 "type": "text",
-                                "text": "You are a helpful assistant that developed by Cathay, DDT team."
-                            }
+                                "text": "You are Ai-Fa, an AI assistant developed by Cathay’s Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers."
+                            },
                         ]
                     },
                     {
