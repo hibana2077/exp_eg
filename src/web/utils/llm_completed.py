@@ -3,6 +3,7 @@ import os
 import time
 
 API_KEY = os.getenv("OPENROUTE_API_KEY", "sk-")
+LLM_MODEL = os.getenv("LLM_MODEL", "thudm/glm-z1-32b:free")
 
 def llm_completion(additional_text:str, question:str, max_retries=3)->str:
     client = OpenAI(
@@ -21,7 +22,8 @@ def llm_completion(additional_text:str, question:str, max_retries=3)->str:
                 },
                 extra_body={},
                 # model="moonshotai/kimi-vl-a3b-thinking:free",
-                model="google/gemini-2.5-pro-exp-03-25:free",
+                # model="google/gemini-2.5-pro-exp-03-25:free",
+                model=LLM_MODEL,
                 # model="mistralai/mistral-nemo",
                 messages=[
                     {
