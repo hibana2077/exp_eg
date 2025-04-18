@@ -119,12 +119,17 @@ class VecStore:
                 tmp.write(md.encode())
                 tmp.flush()
                 # Convert to pure doc
+            time_start = datetime.datetime.now()
             pure_doc = table_convert(tmp.name)
-            print("Check Point A")
+            print(f"Check Point A: {datetime.datetime.now() - time_start}")
+            time_start = datetime.datetime.now()
             chunks = list(self.chunker.chunk(dl_doc=pure_doc))
-            print("Check Point B")
+            print(f"Check Point B: {datetime.datetime.now() - time_start}")
+            time_start = datetime.datetime.now()
             tables = [self.table_transform(c) for c in chunks]
-            print("Check Point C")
+            print("Check Point C: ", datetime.datetime.now() - time_start)
+            # Remove the temporary file
+            os.remove(tmp.name)
             if tables:
                 tbl_tab = self.db.create_table(self.tables_table_name, TABLE_FORMAT)
                 tbl_tab.insert(tables)
