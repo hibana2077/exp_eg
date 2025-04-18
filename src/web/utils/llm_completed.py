@@ -31,7 +31,7 @@ def llm_completion(additional_text:str, question:str, max_retries=3)->str:
                         "content": [
                             {
                                 "type": "text",
-                                "text": "You are Ai-Fa, an AI assistant developed by Cathay’s Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond in Chinese. If you cannot find the answer, say 'I don't know'."
+                                "text": "You are Ai-Fa, an AI assistant developed by Cathay’s Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond language should be based on user input. If you cannot find the answer, say 'I don't know'."
                             },
                         ]
                     },

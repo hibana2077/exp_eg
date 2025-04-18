@@ -318,6 +318,7 @@ async def search(data:dict):
             "kb_name": data["kb_name"],
             "tables": return_tables
         }
+        pprint.pprint(tables)
         return {"status": "success", "tables": tables}
     except Exception as e:
         return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
