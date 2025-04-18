@@ -12,6 +12,7 @@ def indexing(db_name:str,table_name:str):
     INFINITY_PORT = os.getenv("INFINITY_PORT", 8080)
     # Initialize connection
     infinity_obj = infinity.connect(infinity.NetworkAddress(INFINITY_HOST, INFINITY_PORT))
+    print("Check Point A: ", datetime.datetime.now())
     db_obj = infinity_obj.get_database(db_name)
     table_obj = db_obj.get_table(table_name)
 
