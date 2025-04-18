@@ -113,10 +113,13 @@ class VecStore:
         tables = []
         if getattr(meta_data.document, "tables", None):
             all_tabs = merge_adjacent_tables(meta_data)
-            md = "\n\n\n\n".join(tbl.to_markdown(index=False) for tbl in all_tabs)
+            md = "\n\n\n".join(tbl.to_markdown(index=False) for tbl in all_tabs)
             pure_doc = table_convert(md)
+            print("Check Point A")
             chunks = list(self.chunker.chunk(dl_doc=pure_doc))
+            print("Check Point B")
             tables = [self.table_transform(c) for c in chunks]
+            print("Check Point C")
             if tables:
                 tbl_tab = self.db.create_table(self.tables_table_name, TABLE_FORMAT)
                 tbl_tab.insert(tables)
