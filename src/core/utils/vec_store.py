@@ -61,8 +61,9 @@ class VecStore:
     def text_transform(self, data: dict) -> dict:
         row = self._common_transform(data)
         txt = data.get("text", "")
+        print(f"Text: {txt}, Type: {type(txt)}, Length: {len(txt)}")
         row.update({
-            "text": txt,
+            "text": txt, #add flattened text
             "orig": data.get("orig"),
             "embedding": list(self.text_model.embed([txt]))[0]
         })
