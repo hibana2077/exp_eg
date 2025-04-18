@@ -114,7 +114,12 @@ class VecStore:
         if getattr(meta_data.document, "tables", None):
             all_tabs = merge_adjacent_tables(meta_data)
             md = "\n\n\n".join(tbl.to_markdown(index=False) for tbl in all_tabs)
-            pure_doc = table_convert(md)
+            # write to md file
+            with NamedTemporaryFile(suffix='.md', delete=False) as tmp:
+                tmp.write(md.encode())
+                tmp.flush()
+                # Convert to pure doc
+            pure_doc = table_convert(tmp.name)
             print("Check Point A")
             chunks = list(self.chunker.chunk(dl_doc=pure_doc))
             print("Check Point B")
