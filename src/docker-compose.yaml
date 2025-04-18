@@ -113,7 +113,7 @@ services:
   #             capabilities: [gpu]
 
   infinity:
-    image: infiniflow/infinity:nightly
+    image: infiniflow/infinity:v0.6.0-dev3
     container_name: infinity
     command: -f /var/infinity/infinity_conf.toml
     volumes:
