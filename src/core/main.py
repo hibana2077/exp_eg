@@ -201,6 +201,7 @@ async def search(data:dict):
     }
     ```
     """
+    pprint.pprint(data)
     try:
         return_tables = []
         for table in data["tables"]:
