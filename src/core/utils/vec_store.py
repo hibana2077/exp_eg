@@ -154,7 +154,7 @@ class VecStore:
         user = os.getenv("MONGO_INITDB_ROOT_USERNAME", "root")
         pwd = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "example")
         client = pymongo.MongoClient(ms, username=user, password=pwd)
-        db = client.get_default_database()
+        db = client["mortis"]
         coll = db.get_collection("index_info")
         return coll.find_one({"kb_name": kb_name}, {"_id": 0})
 
