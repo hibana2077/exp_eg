@@ -170,7 +170,10 @@ def view_kb_dialog(kb_name:str):
                             df = pd.DataFrame(table['result'])
                             st.dataframe(df)
                             for i in range(len(df)):
-                                rag_data_text += f"{df['text'][i]}\n"
+                                if "texts" in table['table_name']:
+                                    rag_data_text += f"data: {df['text'][i]} page: {df['page'][i]}\n"
+                                elif "tables" in table['table_name']:
+                                    rag_data_text += f"data: {df['text'][i]}\n"
                         else:
                             st.write(f"Table: {table['table_name']}")
                             images = table['result']
