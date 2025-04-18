@@ -65,7 +65,7 @@ def search(
        
        # DEBUG
        tmp_query = table_obj.output(["*"]).to_pl()
-       print(f"DEBUG: {tmp_query[:5]}") # pl don't have head()
+       print(f"DEBUG: {tmp_query[0].head()}")
 
        # Start query with output selection
        query = table_obj.output(select_cols)
