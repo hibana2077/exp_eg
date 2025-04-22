@@ -61,7 +61,6 @@ class VecStore:
     def text_transform(self, data: dict) -> dict:
         row = self._common_transform(data)
         txt = data.get("text", "")
-        print(f"Text: {txt}, Type: {type(txt)}, Length: {len(txt)}")
         row.update({
             "text": txt, #add flattened text
             "orig": data.get("orig"),
@@ -101,7 +100,6 @@ class VecStore:
         }
         # Texts
         texts = [self.text_transform(t) for t in data.get("texts", [])]
-        pprint.pprint(texts[:3])
         tbl_txt = self.db.create_table(self.texts_table_name, TEXT_FORMAT)
         if texts:
             tbl_txt.insert(texts)
@@ -122,15 +120,9 @@ class VecStore:
                 tmp.write(md.encode())
                 tmp.flush()
                 # Convert to pure doc
-            time_start = datetime.datetime.now()
             pure_doc = table_convert(tmp.name)
-            print(f"Check Point A: {datetime.datetime.now() - time_start}")
-            time_start = datetime.datetime.now()
             chunks = list(self.chunker.chunk(dl_doc=pure_doc))
-            print(f"Check Point B: {datetime.datetime.now() - time_start}")
-            time_start = datetime.datetime.now()
             tables = [self.table_transform(c) for c in chunks]
-            print("Check Point C: ", datetime.datetime.now() - time_start)
             # Remove the temporary file
             os.remove(tmp.name)
             if tables:
