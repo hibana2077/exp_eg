@@ -126,6 +126,7 @@ def search(
               # Apply fusion
               query = query.fusion('rrf', topn=limit)
 
+       pprint.pprint(query.to_pl())
        # Execute and return results in requested format
        if return_format == "pl":return query.to_pl()
        elif return_format == "pd":return query.to_df()
