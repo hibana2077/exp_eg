@@ -237,6 +237,11 @@ async def search(data:dict):
                 result = result
             else:
                 raise ValueError("Invalid return format")
+            # add the result to the return_tables
+            return_tables.append({
+                "table_name": table[0],
+                "result": result
+            })
             # Table data
             if table[2] != "":
                 return_tables.append({
