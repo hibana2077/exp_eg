@@ -155,7 +155,7 @@ def view_kb_dialog(kb_name:str):
                     "conditions": {"text": [{"field": "text", "query": query_text, 'topn': top_k}]},
                     "do_image_search": do_image_search,
                     "limit": top_k,
-                    "return_format": "pd"
+                    "return_format": "pl"
                 }
                 # Send request to core
                 res = requests.post(f"{CORE_SERVER}/search", json=payload)
