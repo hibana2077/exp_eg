@@ -224,7 +224,6 @@ async def search(data:dict):
                 limit=data["limit"],
                 return_format=data["return_format"]
             )
-            pprint(result)
             result = result[0]
             # all turn to dict
             if data["return_format"] == "pl":# type -> pl.DataFrame
