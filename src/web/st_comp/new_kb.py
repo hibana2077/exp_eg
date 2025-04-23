@@ -30,7 +30,7 @@ def new_kb(data:dict):
 
 @st.dialog("New Knowledge Base")
 def new_kb_dialog():
-    name = st.text_input("New KB Name")
+    name = st.text_input("New KB Name", max_chars=20)
     desc = st.text_input("Description")
     icon = st.selectbox("Icon",['📚','📖','📕','📗','📘','📙','📔','📒','📚','📓','📃','📜','📄','📰','🗞️','📑','🔖','🏷️','📎','🖇️','📌','📍','📏','📐','🗂️','📁','📂','🗃️','🗄️','🗑️','🔒','🔓','🔏','🔐','🔑','🗝️','🔨','⛏️','🛠️','🗡️','🔫','🏹','🛡️','🔧','🔩','🗜️','🔗','⛓️','🧰','🧲','🔬','🔭','📡','💉','💊','🚪','🛏️','🛋️','🚽','🚿','🛁','🪒','🧴','🧷','🧹','🧺','🧻','🧼','🧽','🧯','🛒','🚬','🗿','🏧','🚮','🚰','🚹','🚺','🚻','🚼','🚾','🛂','🛃','🛄','🛅','🚸','⛔','🚫','🚳','🚭','🚯','🚱','🚷','📵','🔞'])
     if st.button("Create",key="new_kb_btn"):
@@ -43,6 +43,9 @@ def new_kb_dialog():
         if icon == "":
             st.error("Please select an icon for the new knowledge base.")
             return
+        if len(name) < 3:
+            st.error("Name must be at least 3 characters long.")
+            return
         data = {
             "name": name,
             "desc": desc,
@@ -54,4 +57,4 @@ def new_kb_dialog():
             st.success("Knowledge base created successfully!")
             st.session_state.new_kb = result
             st.session_state.kb = result
-        st.rerun()
+            st.rerun()
