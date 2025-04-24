@@ -64,4 +64,26 @@ This system have two main api servers:
     }
     ```
 
-### 
+### Procese file
+
+- POST {core}/process_file
+    - Request Body:
+    ```json
+    {
+        "kb_name": "my_kb",
+        "task_queue": [
+            {
+                "kb_name": "my_kb",
+                "file_name": "my_file.txt",
+            },
+            ...
+        ]
+    }
+    ```
+    - Response:
+    ```json
+    {
+        "status": "success",
+        "message": "File processed and indexed successfully"
+    }
+    ```
