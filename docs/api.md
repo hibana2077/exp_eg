@@ -87,3 +87,56 @@ This system have two main api servers:
         "message": "File processed and indexed successfully"
     }
     ```
+
+### List (embedding) tables
+
+- GET {core}/list_tables/{kb_name}
+    - Response:
+    ```json
+    {
+        "status": "success",
+        "tables":[
+            {
+                "table_name": "my_table",
+                "table_type": "embedding",
+                "description": "my table description",
+                "owner": "string(user name or user id)",
+            }
+        ]
+    }
+    ```
+
+### Search
+
+- POST {core}/search
+    - Request Body:
+    ```json
+    {
+        "kb_name": "my_kb",
+        "tables": [
+            ["texts_table_name", "images_table_name", "tables_table_name"],
+            ...
+        ],
+        "select_cols": ["*"],
+        "conditions": { //for all tables
+            "text": [
+                {"field": "text", "query": "query_text", "topn": 10}
+            ]
+        },
+        "do_image_search": true,
+        "limit": 10,
+        "return_format": "pd"
+    }
+    ```
+    - Response:
+    ```json
+    {
+        "status": "success",
+        "tables": [
+            df1.json,
+            df2.json,
+            df3.json,
+            ...
+        ]
+    }
+    ```
