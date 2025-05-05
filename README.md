@@ -1,6 +1,6 @@
 # Data Engine
 
-## Accelerator Support
+## Hardware Requirements
 
-- [x] CPU
-- [x] GPU
+- CPU: 16 cores
+- RAM: 32 GB
