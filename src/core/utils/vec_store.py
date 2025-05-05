@@ -64,8 +64,6 @@ class VecStore:
         row.update({
             "text": txt, #add flattened text
             "orig": data.get("orig"),
-            # "embedding": list(self.text_model.embed([txt]))[0]
-            # "embedding": data.get("embedding", []),
         })
         return row
 
