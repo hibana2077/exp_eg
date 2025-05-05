@@ -64,7 +64,8 @@ class VecStore:
         row.update({
             "text": txt, #add flattened text
             "orig": data.get("orig"),
-            "embedding": list(self.text_model.embed([txt]))[0]
+            # "embedding": list(self.text_model.embed([txt]))[0]
+            # "embedding": data.get("embedding", []),
         })
         return row
 
@@ -99,7 +100,12 @@ class VecStore:
             "tables_table_name": self.tables_table_name,
         }
         # Texts
+        ## batch-embed
+        pure_texts = [t.get("text", "") for t in data.get("texts", [])]
+        embeds = list(self.text_model.embed(pure_texts))
         texts = [self.text_transform(t) for t in data.get("texts", [])]
+        for i, text in enumerate(texts):
+            text['embedding'] = embeds[i]
         tbl_txt = self.db.create_table(self.texts_table_name, TEXT_FORMAT)
         if texts:
             tbl_txt.insert(texts)
