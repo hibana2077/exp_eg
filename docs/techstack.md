@@ -1,8 +1,8 @@
 # Tech Stack
 
-- filesystem: Minio
-- data_engine: infinity
-- local_inf: ollama, aphrodite-engine
+- LLM: ollama
 - DB: Redis, Mongo
-- Backend: BlackSheep
-- Web: Streamlit
+- Backend: Fastapi
+- Web: Streamlit + Tailwind
+
+![alt text](techstack.png)
