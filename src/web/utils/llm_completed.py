@@ -1,3 +1,4 @@
+from typing import Optional
 from openai import OpenAI
 import os
 import time
@@ -9,7 +10,66 @@ logger = logging.getLogger(__name__)
 API_KEY = os.getenv("OPENROUTE_API_KEY", "sk-")
 LLM_MODEL = os.getenv("LLM_MODEL", "thudm/glm-z1-32b:free")
 
-def llm_completion(additional_text:str, rag_data_img:list[str], question:str, max_retries=3)->str:
+def message_with_img(additional_text:str, rag_data_img:Optional[list[str]], question:str):
+    return [
+        {
+            "role": "system",
+            "content": [
+                        {
+                            "type": "text",
+                            "text": "You are Ai-Fa, an AI assistant developed by Cathay's Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond language should be based on user question. If you cannot find the answer, say 'I don't know'."
+                        },
+                    ]
+        },
+        {
+            "role": "user",
+            "content": [
+                        {
+                            "type": "text",
+                            "text": "<rag-data>" + additional_text + "</rag-data>"
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url":{
+                                "url": f"data:image/png;base64,{rag_data_img[0]}",
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "text": "<question>" + question + "</question>"
+                        }
+                    ]
+                }
+    ]
+    
+def message_without_img(additional_text:str, question:str):
+    return [
+        {
+            "role": "system",
+            "content": [
+                        {
+                            "type": "text",
+                            "text": "You are Ai-Fa, an AI assistant developed by Cathay's Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond language should be based on user question. If you cannot find the answer, say 'I don't know'."
+                        },
+                    ]
+        },
+        {
+            "role": "user",
+            "content": [
+                        {
+                            "type": "text",
+                            "text": "<rag-data>" + additional_text + "</rag-data>"
+                        },
+                        {
+                            "type": "text",
+                            "text": "<question>" + question + "</question>"
+                        }
+                    ]
+                }
+    ]
+
+
+def llm_completion(additional_text:str, rag_data_img:Optional[list[str]], question:str, max_retries=3)->str:
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=API_KEY,
@@ -26,36 +86,7 @@ def llm_completion(additional_text:str, rag_data_img:list[str], question:str, ma
                 },
                 extra_body={},
                 model=LLM_MODEL,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "You are Ai-Fa, an AI assistant developed by Cathay's Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond language should be based on user question. If you cannot find the answer, say 'I don't know'."
-                            },
-                        ]
-                    },
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "<rag-data>" + additional_text + "</rag-data>"
-                            },
-                            {
-                                "type": "image_url",
-                                "image_url":{
-                                    "url": f"data:image/png;base64,{rag_data_img[0]}",
-                                }
-                            },
-                            {
-                                "type": "text",
-                                "text": "<question>" + question + "</question>"
-                            }
-                        ]
-                    }
-                ]
+                messages=message_with_img(additional_text, rag_data_img, question) if rag_data_img else message_without_img(additional_text, question),
             )
             
             # Check if completion and its properties exist before accessing them
