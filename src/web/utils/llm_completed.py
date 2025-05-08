@@ -1,6 +1,10 @@
 from openai import OpenAI
 import os
 import time
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 API_KEY = os.getenv("OPENROUTE_API_KEY", "sk-")
 LLM_MODEL = os.getenv("LLM_MODEL", "thudm/glm-z1-32b:free")
@@ -58,6 +62,9 @@ def llm_completion(additional_text:str, rag_data_img:list[str], question:str, ma
             if completion and completion.choices and completion.choices[0] and completion.choices[0].message:
                 return completion.choices[0].message.content
             else:
+                logger.error("Incomplete response structure")
+                # Log the response for debugging
+                logger.error(f"Response: {completion}")
                 raise TypeError("Incomplete response received")
                 
         except (TypeError, AttributeError) as e:
