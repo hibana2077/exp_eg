@@ -46,7 +46,7 @@ def llm_completion(additional_text:str, rag_data_img:list[str], question:str, ma
                             {
                                 "type": "image_url",
                                 "image_url":{
-                                    "url": f"data:image/jpeg;base64,{rag_data_img[0]}",
+                                    "url": f"data:image/png;base64,{rag_data_img[0]}",
                                 }
                             },
                             {
