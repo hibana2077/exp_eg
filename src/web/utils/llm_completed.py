@@ -5,7 +5,7 @@ import time
 API_KEY = os.getenv("OPENROUTE_API_KEY", "sk-")
 LLM_MODEL = os.getenv("LLM_MODEL", "thudm/glm-z1-32b:free")
 
-def llm_completion(additional_text:str, question:str, max_retries=3)->str:
+def llm_completion(additional_text:str, rag_data_img:list[str], question:str, max_retries=3)->str:
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=API_KEY,
@@ -17,21 +17,18 @@ def llm_completion(additional_text:str, question:str, max_retries=3)->str:
         try:
             completion = client.chat.completions.create(
                 extra_headers={
-                    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-                    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+                    "HTTP-Referer": "https://github.com/hibana2077/exp_eg",
+                    "X-Title": "Data Engine",
                 },
                 extra_body={},
-                # model="moonshotai/kimi-vl-a3b-thinking:free",
-                # model="google/gemini-2.5-pro-exp-03-25:free",
                 model=LLM_MODEL,
-                # model="mistralai/mistral-nemo",
                 messages=[
                     {
                         "role": "system",
                         "content": [
                             {
                                 "type": "text",
-                                "text": "You are Ai-Fa, an AI assistant developed by Cathay’s Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond language should be based on user question. If you cannot find the answer, say 'I don't know'."
+                                "text": "You are Ai-Fa, an AI assistant developed by Cathay's Digital, Data, and Technology (DDT) team. Respond concisely and accurately, citing resource page numbers alongside your answers. Respond language should be based on user question. If you cannot find the answer, say 'I don't know'."
                             },
                         ]
                     },
@@ -41,6 +38,12 @@ def llm_completion(additional_text:str, question:str, max_retries=3)->str:
                             {
                                 "type": "text",
                                 "text": "<rag-data>" + additional_text + "</rag-data>"
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url":{
+                                    "url": rag_data_img[0],
+                                }
                             },
                             {
                                 "type": "text",

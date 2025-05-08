@@ -164,6 +164,7 @@ def view_kb_dialog(kb_name:str):
                     st.success("Retrieval success!")
                     # st.json(result,expanded=False)
                     rag_data_text = ""
+                    rag_data_img = []
                     for table in result['tables']:
                         if 'image' not in table['table_name']:
                             st.write(f"Table: {table['table_name']}")
@@ -181,10 +182,11 @@ def view_kb_dialog(kb_name:str):
                             for encoded in images['image']:
                                 # Decode the image
                                 image_data = base64.b64decode(encoded)
+                                rag_data_img.append(encoded)
                                 # Display the image
                                 st.image(image_data)
                         st.divider()
-                    llm_result = llm_completion(rag_data_text, query_text)
+                    llm_result = llm_completion(rag_data_text, rag_data_img, query_text)
                     st.write("LLM Simulation Result:")
                     message = st.chat_message("assistant")
                     message.write(llm_result)
