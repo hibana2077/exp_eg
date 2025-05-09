@@ -9,8 +9,12 @@ services:
       HOST: "0.0.0.0"
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      INFINITY_HOST: "infinity"
-      INFINITY_PORT: 23817
+      # MongoDB Atlas configuration (cloud/production database)
+      MONGO_ATLAS_URI: ${MONGO_ATLAS_URI:-mongodb+srv://cluster0.example.mongodb.net/}
+      MONGO_ATLAS_USERNAME: ${MONGO_ATLAS_USERNAME:-atlasuser}
+      MONGO_ATLAS_PASSWORD: ${MONGO_ATLAS_PASSWORD:-atlaspassword}
+      MONGO_ATLAS_ENABLED: ${MONGO_ATLAS_ENABLED:-false}
+      # Local MongoDB configuration (development/testing database)
       MONGO_SERVER: "mongodb://db_mongo:27017"
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -55,9 +59,16 @@ services:
     environment:
       HOST: "0.0.0.0"
       OLLAMA_SERVER: "http://ollama:11434"
+      # MongoDB Atlas configuration (cloud/production database)
+      MONGO_ATLAS_URI: ${MONGO_ATLAS_URI:-mongodb+srv://cluster0.example.mongodb.net/}
+      MONGO_ATLAS_USERNAME: ${MONGO_ATLAS_USERNAME:-atlasuser}
+      MONGO_ATLAS_PASSWORD: ${MONGO_ATLAS_PASSWORD:-atlaspassword}
+      MONGO_ATLAS_ENABLED: ${MONGO_ATLAS_ENABLED:-false}
+      # Local MongoDB configuration (development/testing database)
       MONGO_SERVER: "mongodb://db_mongo:27017"
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      # Legacy configurations (retained for compatibility)
       INFINITY_HOST: "infinity"
       INFINITY_PORT: 23817
       # REDIS_HOST: "db_redis"

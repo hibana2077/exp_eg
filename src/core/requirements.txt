@@ -3,12 +3,15 @@ requests
 fastapi
 uvicorn
 docling
-pymongo
+pymongo[srv]==4.6.1
+dnspython==2.4.2
+numpy
+pandas
+pyarrow
 qdrant-client
 polars
 minio
 tesserocr
 easyocr
-infinity-sdk==0.6.0.dev3
 fastembed
 transformers

@@ -1,9 +1,13 @@
-import infinity
 import datetime
 import pprint
 import os
+import pymongo
 from typing import List, Dict, Any, Optional, Union, Tuple
 import numpy as np
+import polars as pl
+import pandas as pd
+import pyarrow as pa
+from .mongo_atlas_config import get_db_collection, MONGO_ATLAS_ENABLED
 
 def search(
     db_name: str,
@@ -11,10 +15,12 @@ def search(
     select_cols: List[str],
     conditions: Dict[str, Any] = None,
     limit: int = 10,
-    return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
+    return_format: str = "pl",  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
+    use_atlas: Optional[bool] = None  # If None, uses the MONGO_ATLAS_ENABLED environment variable
 ) -> Any:
        """
-       Flexible search function for Infinity DB that supports multiple match conditions.
+       Flexible search function for MongoDB that supports multiple match conditions.
+       Supports both MongoDB Atlas (cloud) and local MongoDB instances.
        
        Parameters:
        -----------
@@ -51,84 +57,158 @@ def search(
               Maximum number of results to return
        return_format : str, optional
               Format to return results in: "pl" (polars), "pd" (pandas), or "raw"
+       use_atlas : bool, optional
+              If True, forces the use of MongoDB Atlas.
+              If False, forces the use of local MongoDB.
+              If None (default), uses the MONGO_ATLAS_ENABLED environment variable.
               
        Returns:
        --------
        Search results in the specified format
        """
-       INFINITY_HOST = os.getenv("INFINITY_HOST", "localhost")
-       INFINITY_PORT = os.getenv("INFINITY_PORT", 8080)
-       # Initialize connection
-       infinity_obj = infinity.connect(infinity.NetworkAddress(INFINITY_HOST, INFINITY_PORT))
-       db_obj = infinity_obj.get_database(db_name)
-       table_obj = db_obj.get_table(table_name)
+       # Get the database collection from either Atlas or local MongoDB
+       collection, is_atlas = get_db_collection(db_name, table_name, use_atlas)
        
-       # DEBUG
-       tmp_query = table_obj.output(["*"]).to_pl()
-       print(f"DEBUG: {tmp_query[0].head()}")
-
-       # Start query with output selection
-       query = table_obj.output(select_cols)
+       # Debug information
        print(f"Processing query: {db_name}.{table_name}")
-       # Apply conditions if provided
-       if conditions:
-              # Apply dense vector matches
-              if 'dense' in conditions:
-                     for dense_match in conditions['dense']:
-                            query = query.match_dense(
-                            dense_match['field'],
-                            dense_match['query'],
-                            dense_match.get('element_type', 'float'),
-                            dense_match.get('metric', 'cosine'),
-                            dense_match.get('topn', limit)
-                            )
-              
-              # Apply text matches
-              if 'text' in conditions:
-                     for text_match in conditions['text']:
-                            query = query.match_text(
-                            text_match['field'],
-                            text_match['query'],
-                            text_match.get('topn', limit),
-                            text_match.get('options', {})
-                            )
-              
-              # Apply sparse vector matches
-              if 'sparse' in conditions:
-                     for sparse_match in conditions['sparse']:
-                            # Create SparseVector from indices and values
-                            sparse_vector = infinity.common.SparseVector(
-                            sparse_match['indices'],
-                            sparse_match['values']
-                            )
-                            query = query.match_sparse(
-                            sparse_match['field'],
-                            sparse_vector,
-                            sparse_match.get('metric', 'ip'),
-                            sparse_match.get('topn', limit)
-                            )
-              
-              # Apply filters
-              if 'filter' in conditions:
-                     for filter_condition in conditions['filter']:
-                            query = query.filter(filter_condition)
-              
-              # Apply fusion if needed
-              if 'fusion' in conditions:
-                     fusion_config = conditions['fusion']
-                     query = query.fusion(
-                            method=fusion_config['method'],
-                            topn=fusion_config.get('topn', limit),
-                            fusion_params=fusion_config.get('fusion_params', {})
-                     )
+       print(f"Select columns: {select_cols}")
        
-       if len(conditions) > 1:
-              # Apply fusion
-              query = query.fusion('rrf', topn=limit)
+       # Initialize MongoDB query dictionary
+       mongo_query = {}
+       mongo_scoring = {}
+       pipeline = []
+       
+       # Process all conditions
+       if conditions:
+           # Apply text search conditions
+           if 'text' in conditions:
+               for text_match in conditions['text']:
+                   # MongoDB supports full-text search with $text and $search operators
+                   if len(conditions['text']) == 1:  # If only one text condition
+                       mongo_query["$text"] = {"$search": text_match['query']}
+                       mongo_scoring["score"] = {"$meta": "textScore"}
+                   else:
+                       # Add to search pipeline for aggregation
+                       pipeline.append({
+                           "$match": {"$text": {"$search": text_match['query']}}
+                       })
+                       pipeline.append({
+                           "$addFields": {"score": {"$meta": "textScore"}}
+                       })
 
-       # pprint.pprint(query.to_pl())
-       # Execute and return results in requested format
-       if return_format == "pl":return query.to_pl()
-       elif return_format == "pd":return query.to_df()
-       elif return_format == "arrow":return query.to_arrow()
-       else:return query.to_result()
+           # Apply vector search conditions for dense vectors
+           if 'dense' in conditions:
+               for dense_match in conditions['dense']:
+                   # Convert this to MongoDB vector search using $vectorSearch
+                   if 'query' in dense_match:
+                       field = dense_match['field']
+                       query_vector = dense_match['query']
+                       # Use $vectorSearch for MongoDB Atlas vector search
+                       search_stage = {
+                           "$vectorSearch": {
+                               "index": f"{field}_vector_index",
+                               "path": field,
+                               "queryVector": query_vector,
+                               "numCandidates": dense_match.get('topn', limit) * 10,  # Increased candidates for better results
+                               "limit": dense_match.get('topn', limit)
+                           }
+                       }
+                       pipeline.append(search_stage)
+
+           # Apply filter conditions
+           if 'filter' in conditions:
+               filter_conditions = {}
+               for filter_condition in conditions['filter']:
+                   # Parse the filter condition (simplified for now)
+                   if "<" in filter_condition:
+                       field, value = filter_condition.split("<")
+                       field = field.strip()
+                       value = value.strip()
+                       try:
+                           value = int(value) if value.isdigit() else float(value)
+                       except ValueError:
+                           value = value
+                       filter_conditions[field] = {"$lt": value}
+                   elif ">" in filter_condition:
+                       field, value = filter_condition.split(">")
+                       field = field.strip()
+                       value = value.strip()
+                       try:
+                           value = int(value) if value.isdigit() else float(value)
+                       except ValueError:
+                           value = value
+                       filter_conditions[field] = {"$gt": value}
+                   elif "=" in filter_condition:
+                       field, value = filter_condition.split("=")
+                       field = field.strip()
+                       value = value.strip()
+                       try:
+                           value = int(value) if value.isdigit() else float(value)
+                       except ValueError:
+                           value = value
+                       filter_conditions[field] = value
+
+               if filter_conditions:
+                   mongo_query.update(filter_conditions)
+
+       # Determine how to execute the query based on conditions
+       if pipeline:
+           # If we have multiple conditions or vector search, use aggregation pipeline
+           if mongo_query:
+               pipeline.insert(0, {"$match": mongo_query})
+           
+           # Project only the selected columns if requested
+           if select_cols and select_cols != ["*"]:
+               projection = {col: 1 for col in select_cols}
+               if "score" in mongo_scoring:
+                   projection["score"] = mongo_scoring["score"]
+               pipeline.append({"$project": projection})
+           
+           # Sort by score if available or other fields
+           if "score" in mongo_scoring:
+               pipeline.append({"$sort": {"score": -1}})
+           
+           # Limit the results
+           pipeline.append({"$limit": limit})
+
+           # Execute the aggregation pipeline
+           result = list(collection.aggregate(pipeline))
+           
+       else:
+           # Simple find query for basic conditions
+           projection = None if select_cols == ["*"] else {col: 1 for col in select_cols}
+           if mongo_scoring:
+               projection = projection or {}
+               projection.update(mongo_scoring)
+           
+           # Execute the find query
+           cursor = collection.find(
+               mongo_query,
+               projection,
+           ).sort([("_id", 1)])  # Default sort by _id
+           
+           if "score" in mongo_scoring:
+               cursor = cursor.sort([("score", -1)])
+           
+           result = list(cursor.limit(limit))
+
+       # Convert the results to the requested format
+       if return_format == "pl":
+           # Convert to Polars DataFrame
+           import polars as pl
+           df = pl.DataFrame(result)
+           return [df]
+       elif return_format == "pd":
+           # Convert to Pandas DataFrame
+           import pandas as pd
+           df = pd.DataFrame(result)
+           return [df]
+       elif return_format == "arrow":
+           # Convert to PyArrow Table
+           import pyarrow as pa
+           import pandas as pd
+           df = pd.DataFrame(result)
+           return [pa.Table.from_pandas(df)]
+       else:
+           # Return raw results
+           return [result]

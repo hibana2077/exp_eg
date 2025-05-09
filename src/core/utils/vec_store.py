@@ -3,22 +3,31 @@ import datetime
 import base64
 import io
 import pprint
+import json
 from tempfile import NamedTemporaryFile
-import infinity  # type: ignore
 import pymongo
+from typing import Dict, Any, Optional, List
 from transformers import AutoTokenizer
 from docling.chunking import HybridChunker  # type: ignore
 from fastembed import TextEmbedding, ImageEmbedding  # type: ignore
 from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS
 from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
 from .parse import table_convert, merge_adjacent_tables
+from .mongo_atlas_config import get_db_collection, get_mongo_client, MONGO_ATLAS_ENABLED
 
 
 class VecStore:
-    def __init__(self, kb_name: str):
+    def __init__(self, kb_name: str, use_atlas: Optional[bool] = None):
+        """
+        Initialize the VecStore.
+        
+        Args:
+            kb_name: Knowledge base name
+            use_atlas: If True, use MongoDB Atlas; if False, use local MongoDB;
+                      if None, use MONGO_ATLAS_ENABLED environment variable
+        """
         self.kb_name = kb_name.lower()
-        self.server = os.getenv("INFINITY_HOST", "localhost")
-        self.port = os.getenv("INFINITY_PORT", "23817")
+        self.use_atlas = use_atlas
         self._connect_db()
         ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         self.texts_table_name = f"file_{ts}_texts"
@@ -35,15 +44,16 @@ class VecStore:
         )
 
     def _connect_db(self):
-        self.infinity_obj = infinity.connect(infinity.NetworkAddress(self.server, self.port))
-        dbs = self.infinity_obj.list_databases().db_names
-        if self.kb_name not in dbs:
-            self.db = self.infinity_obj.create_database(self.kb_name)
-        else:
-            self.db = self.infinity_obj.get_database(self.kb_name)
+        """Connect to MongoDB (either Atlas or local)"""
+        self.mongo_client, self.is_atlas = get_mongo_client(self.use_atlas)
+        self.db = self.mongo_client[self.kb_name]
+        db_name_src = "Atlas" if self.is_atlas else "Local"
+        print(f"Connected to {db_name_src} MongoDB: {self.kb_name}")
 
     def _disconnect(self):
-        self.infinity_obj.disconnect()
+        """Disconnect from MongoDB"""
+        if hasattr(self, 'mongo_client'):
+            self.mongo_client.close()
 
     def _common_transform(self, data: dict) -> dict:
         prov = data.get("prov", [{}])[0]
@@ -97,6 +107,7 @@ class VecStore:
             "images_table_name": self.images_table_name,
             "tables_table_name": self.tables_table_name,
         }
+        
         # Texts
         ## batch-embed
         pure_texts = [t.get("text", "") for t in data.get("texts", [])]
@@ -104,16 +115,26 @@ class VecStore:
         texts = [self.text_transform(t) for t in data.get("texts", [])]
         for i, text in enumerate(texts):
             text['embedding'] = embeds[i]
-        tbl_txt = self.db.create_table(self.texts_table_name, TEXT_FORMAT)
+        
+        # Create MongoDB collection for texts
         if texts:
-            tbl_txt.insert(texts)
+            # Create text indexes for search capabilities
+            self.db[self.texts_table_name].create_index([("text", pymongo.TEXT)])
+            
+            # Create vector search index (note: this would typically be done through Atlas UI)
+            # This is a placeholder to indicate where you would configure the vector search index
+            
+            # Insert the texts into MongoDB
+            self.db[self.texts_table_name].insert_many(texts)
+        
         # Images
         pics = [self.image_transform(i) for i in data.get("pictures", [])]
         if pics:
-            tbl_img = self.db.create_table(self.images_table_name, IMAGE_FORMAT)
-            tbl_img.insert(pics)
+            # Create MongoDB collection for images and insert data
+            self.db[self.images_table_name].insert_many(pics)
         else:
             status["images_table_name"] = ""
+        
         # Tables
         tables = []
         if getattr(meta_data.document, "tables", None):
@@ -130,42 +151,94 @@ class VecStore:
             # Remove the temporary file
             os.remove(tmp.name)
             if tables:
-                tbl_tab = self.db.create_table(self.tables_table_name, TABLE_FORMAT)
-                tbl_tab.insert(tables)
+                # Create MongoDB collection for tables and insert data
+                self.db[self.tables_table_name].insert_many(tables)
         else:
             status["tables_table_name"] = ""
+            
+        # Record the collection creation in a metadata collection
+        metadata_collection = self.db["metadata"]
+        metadata_collection.insert_one({
+            "file_name": file_name,
+            "texts_table_name": self.texts_table_name if texts else "",
+            "images_table_name": self.images_table_name if pics else "",
+            "tables_table_name": self.tables_table_name if tables else "",
+            "created_at": datetime.datetime.now()
+        })
+        
         self._disconnect()
         return status
 
     @staticmethod
-    def list_all_tables(kb_name: str):
-        server = os.getenv("INFINITY_HOST", "localhost")
-        port = os.getenv("INFINITY_PORT", "23817")
-        inf = infinity.connect(infinity.NetworkAddress(server, port))
-        db = inf.get_database(kb_name.lower())
-        tables = db.list_tables()
-        inf.disconnect()
+    def list_all_tables(kb_name: str, use_atlas: Optional[bool] = None):
+        """
+        List all tables/collections in a knowledge base.
+        
+        Args:
+            kb_name: Knowledge base name
+            use_atlas: If True, use MongoDB Atlas; if False, use local MongoDB;
+                      if None, use MONGO_ATLAS_ENABLED environment variable
+                      
+        Returns:
+            List of collection names
+        """
+        # Get MongoDB client
+        client, is_atlas = get_mongo_client(use_atlas)
+        
+        # Get database
+        db = client[kb_name.lower()]
+        
+        # Get collection names (tables)
+        tables = db.list_collection_names()
+        
+        # Close connection
+        client.close()
+        
+        db_name_src = "Atlas" if is_atlas else "Local"
+        print(f"Listed tables from {db_name_src} MongoDB: {len(tables)} tables found")
+        
         return tables
 
     @staticmethod
-    def list_all_tables_mongo(kb_name: str):
-        ms = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
-        user = os.getenv("MONGO_INITDB_ROOT_USERNAME", "root")
-        pwd = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "example")
-        client = pymongo.MongoClient(ms, username=user, password=pwd)
+    def list_all_tables_mongo(kb_name: str, use_atlas: Optional[bool] = None):
+        """
+        Get metadata about tables in a knowledge base from MongoDB.
+        
+        Args:
+            kb_name: Knowledge base name
+            use_atlas: If True, use MongoDB Atlas; if False, use local MongoDB; 
+                      if None, use MONGO_ATLAS_ENABLED environment variable
+                      
+        Returns:
+            Dictionary with knowledge base metadata
+        """
+        # Get MongoDB client
+        client, is_atlas = get_mongo_client(use_atlas)
+        
+        # Access the mortis database (metadata database)
         db = client["mortis"]
         coll = db.get_collection("index_info")
-        return coll.find_one({"kb_name": kb_name}, {"_id": 0})
+        
+        # Find the knowledge base metadata
+        result = coll.find_one({"kb_name": kb_name}, {"_id": 0})
+        
+        # Close connection
+        client.close()
+        
+        return result
 
 # Backward compatibility functions
 
-def save_vec_store(kb_name: str, file_name: str, data: dict, meta_data) -> dict:
-    return VecStore(kb_name).save(file_name, data, meta_data)
+def save_vec_store(kb_name: str, file_name: str, data: dict, meta_data, use_atlas: Optional[bool] = None) -> dict:
+    """Save data to vector store (MongoDB)"""
+    return VecStore(kb_name, use_atlas).save(file_name, data, meta_data)
 
 
-def list_all_tables(kb_name: str):
-    return VecStore.list_all_tables(kb_name)
+def list_all_tables(kb_name: str, use_atlas: Optional[bool] = None):
+    """List all tables/collections in a knowledge base"""
+    return VecStore.list_all_tables(kb_name, use_atlas)
 
 
-def list_all_tables_mongo(kb_name: str):
-    return VecStore.list_all_tables_mongo(kb_name)
+def list_all_tables_mongo(kb_name: str, use_atlas: Optional[bool] = None):
+    """Get metadata about tables in a knowledge base"""
+    return VecStore.list_all_tables_mongo(kb_name, use_atlas)

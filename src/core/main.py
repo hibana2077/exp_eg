@@ -21,6 +21,7 @@ from utils.indexing import indexing, add_index_into_condiction
 from utils.search import search as search_func
 from utils.parse import convert
 from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
+from utils.mongo_atlas_config import MONGO_ATLAS_ENABLED
 
 from cfg.emb_settings import IMG_CLIP_EMB_MODEL, IMG_EMB_SEARCH_METRIC
 

@@ -1,0 +1,48 @@
+{
+    "vector_indexes": [
+        {
+            "name": "embedding_vector_idx",
+            "type": "vectorSearch",
+            "fields": [
+                {
+                    "path": "embedding",
+                    "numDimensions": 512,
+                    "similarity": "cosine"
+                }
+            ],
+            "description": "Vector index for text embeddings"
+        },
+        {
+            "name": "image_embedding_vector_idx",
+            "type": "vectorSearch",
+            "fields": [
+                {
+                    "path": "embedding",
+                    "numDimensions": 512,
+                    "similarity": "cosine"
+                }
+            ],
+            "description": "Vector index for image embeddings"
+        }
+    ],
+    "text_indexes": [
+        {
+            "name": "text_search_idx",
+            "fields": [
+                {
+                    "fieldName": "text",
+                    "weight": 10
+                },
+                {
+                    "fieldName": "label",
+                    "weight": 5
+                },
+                {
+                    "fieldName": "content_layer",
+                    "weight": 2
+                }
+            ],
+            "description": "Text search index"
+        }
+    ]
+}
