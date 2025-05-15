@@ -98,7 +98,7 @@ services:
     restart: always
 
   db_atlas:
-    image: mongodb/mongodb-atlas-local
+    image: mongodb/mongodb-atlas-local:latest
     container_name: de_atlas
     ports:
       - "27018:27017"
