@@ -102,10 +102,10 @@ services:
     container_name: de_atlas
     ports:
       - "27018:27017"
-    environment:
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGO_ATLAS_USERNAME:-atlasuser}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGO_ATLAS_PASSWORD:-atlaspassword}
-      - RUNNER_LOG_FILE=/dev/stderr
+    # environment:
+      # - MONGODB_INITDB_ROOT_USERNAME=${MONGO_ATLAS_USERNAME:-atlasuser}
+      # - MONGODB_INITDB_ROOT_PASSWORD=${MONGO_ATLAS_PASSWORD:-atlaspassword}
+      # - RUNNER_LOG_FILE=/dev/stderr
     volumes:
       - /data/atlas-data:/data/db
       - /data/atlas-init:/docker-entrypoint-initdb.d
