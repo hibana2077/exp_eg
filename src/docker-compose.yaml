@@ -71,8 +71,6 @@ services:
       # Legacy configurations (retained for compatibility)
       INFINITY_HOST: "infinity"
       INFINITY_PORT: 23817
-      # REDIS_HOST: "db_redis"
-      # REDIS_PORT: 6379
       DATABASE_URL: "sqlite:////app/data/users.db"
     networks:
       - mynet
@@ -89,7 +87,7 @@ services:
       - /data/mongo-data:/data/db
     networks:
       - mynet
-    
+
   db_qdrant:
     image: qdrant/qdrant:latest
     container_name: qdrant
@@ -101,43 +99,19 @@ services:
       - /data/qdrant-data:/qdrant/storage
     restart: always
 
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   ports:
-  #     - "11434:11434"
-  #   networks:
-  #     - mynet
-  #   volumes:
-  #     - ./ollama:/root/.ollama:rw
-  #   container_name: ollama
-  #   pull_policy: always
-  #   tty: true
-  #   restart: unless-stopped
-  #   environment:
-  #     - OLLAMA_KEEP_ALIVE=24h
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         devices:
-  #           - driver: nvidia
-  #             count: 1
-  #             capabilities: [gpu]
-
-  infinity:
-    image: infiniflow/infinity:nightly
-    container_name: infinity
-    command: -f /var/infinity/infinity_conf.toml
-    volumes:
-      - /var/infinity/:/var/infinity
-    ulimits:
-      nofile:
-        soft: 500000
-        hard: 500000
+  db_atlas:
+    image: mongodb/mongodb-atlas-local
+    container_name: db_atlas
     ports:
-      - "23817:23817"
+      - "27017:27017"
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=${MONGO_ATLAS_USERNAME:-atlasuser}
+      - MONGODB_INITDB_ROOT_PASSWORD=${MONGO_ATLAS_PASSWORD:-atlaspassword}
+      - RUNNER_LOG_FILE=/dev/stderr
+    volumes:
+      - /data/atlas-data:/data/db
     networks:
       - mynet
-    restart: unless-stopped
 
   minio:
     image: quay.io/minio/minio

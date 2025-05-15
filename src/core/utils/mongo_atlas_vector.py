@@ -59,11 +59,11 @@ def create_vector_search_index(
     
     try:
         # In a real Atlas environment, you would use:
-        # db = client[database_name]
-        # result = db.command({
-        #     "createSearchIndexes": collection_name,
-        #     "indexes": [vector_search_config]
-        # })
+        db = client[database_name]
+        result = db.command({
+            "createSearchIndexes": collection_name,
+            "indexes": [vector_search_config]
+        })
         
         # For now, just log the configuration that would be used
         logger.info(f"Vector search index config: {json.dumps(vector_search_config, indent=2)}")
