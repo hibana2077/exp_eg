@@ -135,6 +135,11 @@ services:
       timeout: 5s
       retries: 5
 
+volumes:
+  atlas-data:
+  atlas-config:
+  atlas-mongot:
+
 networks:
   mynet:
     driver: bridge
