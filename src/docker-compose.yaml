@@ -98,17 +98,17 @@ services:
     restart: always
 
   db_atlas:
-    image: mongodb/mongodb-atlas-local:latest
+    image: mongodb/mongodb-atlas-local
     container_name: de_atlas
     ports:
       - "27018:27017"
-    # environment:
+    environment:
       # - MONGODB_INITDB_ROOT_USERNAME=${MONGO_ATLAS_USERNAME:-atlasuser}
       # - MONGODB_INITDB_ROOT_PASSWORD=${MONGO_ATLAS_PASSWORD:-atlaspassword}
-      # - RUNNER_LOG_FILE=/dev/stderr
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
     volumes:
       - /data/atlas-data:/data/db
-      - /data/atlas-init:/docker-entrypoint-initdb.d
     networks:
       - mynet
 
