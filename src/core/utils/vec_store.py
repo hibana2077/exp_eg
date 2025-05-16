@@ -113,10 +113,10 @@ class VecStore:
         ## batch-embed
         pure_texts = [t.get("text", "") for t in data.get("texts", [])]
         embeds = list(self.text_model.embed(pure_texts))
-        logging.info(f"Type of embeds: {type(embeds[0])}")
+        logging.info(f"Type of embeds[0]: {type(embeds[0])}")
         texts = [self.text_transform(t) for t in data.get("texts", [])]
         for i, text in enumerate(texts):
-            text['embedding'] = embeds[i]
+            text['embedding'] = embeds[i].tolist()
         
         # Create MongoDB collection for texts
         if texts:
