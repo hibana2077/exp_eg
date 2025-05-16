@@ -87,7 +87,7 @@ class VecStore:
         with NamedTemporaryFile(suffix='.png') as tmp:
             tmp.write(img_bytes)
             tmp.flush()
-            emb = list(self.image_model.embed([tmp.name]))[0]
+            emb = list(self.image_model.embed([tmp.name]))[0].tolist()
         row.update({
             "image": encoded,
             "dpi": image_info.get("dpi"),
@@ -99,7 +99,7 @@ class VecStore:
 
     def table_transform(self, chunk) -> dict:
         txt = chunk.text
-        return {"text": txt, "embedding": list(self.table_model.embed([txt]))[0]}
+        return {"text": txt, "embedding": list(self.table_model.embed([txt]))[0].tolist()}
 
     def save(self, file_name: str, data: dict, meta_data) -> dict:
         status = {
