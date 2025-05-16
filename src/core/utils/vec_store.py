@@ -4,6 +4,7 @@ import base64
 import io
 import pprint
 import json
+import logging
 from tempfile import NamedTemporaryFile
 import pymongo
 from typing import Dict, Any, Optional, List
@@ -112,6 +113,7 @@ class VecStore:
         ## batch-embed
         pure_texts = [t.get("text", "") for t in data.get("texts", [])]
         embeds = list(self.text_model.embed(pure_texts))
+        logging.info(f"Type of embeds: {type(embeds[0])}")
         texts = [self.text_transform(t) for t in data.get("texts", [])]
         for i, text in enumerate(texts):
             text['embedding'] = embeds[i]
