@@ -4,6 +4,8 @@ import pymongo
 import json
 from typing import List, Dict, Any, Optional, Union, Tuple
 import numpy as np
+from pymongo.operations import SearchIndexModel
+from cfg.emb_settings import EMB_DIM
 from .mongo_atlas_config import get_db_collection, MONGO_ATLAS_ENABLED
 
 def indexing(db_name:str, table_name:str, use_atlas: Optional[bool] = None):
@@ -27,34 +29,28 @@ def indexing(db_name:str, table_name:str, use_atlas: Optional[bool] = None):
     # Create a text index for text search
     index_name = 'text_index_in_' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     
-    # Create text index on the 'text' field
-    collection.create_index([('text', pymongo.TEXT)], name=index_name)
-    
     # Create indexes for vector search (assuming 'embedding' field exists)
     try:
-        # For MongoDB Atlas vector search
-        vector_index_config = {
-            "name": "embedding_vector_index",
-            "type": "vectorSearch",
-            "fields": [
-                {
-                    "path": "embedding",
-                    "numDimensions": 512,  # Adjust dimension to match your embeddings
-                    "similarity": "cosine"  # Options: cosine, dotProduct, euclidean
-                }
-            ]
-        }
-        
-        # Create vector search index via Atlas command
-        # Note: This command is for reference only as it normally requires Atlas UI or API
-        # In practice, you'd create these indexes through the MongoDB Atlas interface or API
-        # db.runCommand({ "createSearchIndexes": table_name, "indexes": [vector_index_config] })
-        
-        print(f"MongoDB index creation completed: {index_name}")
+        search_index_model = SearchIndexModel(
+            definition={
+                "fields": [
+                    {
+                        "type": "vector",
+                        "numDimensions": EMB_DIM,  # 根據您的嵌入向量維度設定
+                        "path": "embedding",    # 向量欄位名稱
+                        "similarity": "dotProduct"  # 相似度計算方法，可選擇 'euclidean', 'cosine', 'dotProduct'
+                    }
+                ]
+            },
+            name=index_name,  # 索引名稱
+            type="vectorSearch"
+        )
+
+        stats = collection.create_search_index(model=search_index_model)
+        print(f"MongoDB index creation completed: {index_name}, stats: {stats}")
+        return search_index_model
     except Exception as e:
         print(f"Warning: Vector index creation may require MongoDB Atlas UI configuration: {e}")
-    
-    return index_name
 
 def add_index_into_condiction(condiction, index_name:str):
     # In MongoDB, we don't need to specify index name for queries
