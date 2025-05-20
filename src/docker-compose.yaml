@@ -98,15 +98,13 @@ services:
     restart: always
 
   db_atlas:
-    image: mongodb/mongodb-atlas-local
+    image: mongodb/mongodb-atlas-local:8.0.1
     container_name: de_atlas
     ports:
       - "27018:27017"
     environment:
-      # - MONGODB_INITDB_ROOT_USERNAME=${MONGO_ATLAS_USERNAME:-atlasuser}
-      # - MONGODB_INITDB_ROOT_PASSWORD=${MONGO_ATLAS_PASSWORD:-atlaspassword}
-      - MONGODB_INITDB_ROOT_USERNAME=user
-      - MONGODB_INITDB_ROOT_PASSWORD=pass
+      - MONGODB_INITDB_ROOT_USERNAME=${MONGO_ATLAS_USERNAME:-atlasuser}
+      - MONGODB_INITDB_ROOT_PASSWORD=${MONGO_ATLAS_PASSWORD:-atlaspassword}
     volumes:
       - atlas-data:/data/db:rw
       - atlas-config:/data/configdb:rw
