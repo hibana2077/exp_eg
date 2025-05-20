@@ -90,28 +90,6 @@ services:
       - /data/qdrant-data:/qdrant/storage
     restart: always
 
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   ports:
-  #     - "11434:11434"
-  #   networks:
-  #     - mynet
-  #   volumes:
-  #     - ./ollama:/root/.ollama:rw
-  #   container_name: ollama
-  #   pull_policy: always
-  #   tty: true
-  #   restart: unless-stopped
-  #   environment:
-  #     - OLLAMA_KEEP_ALIVE=24h
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         devices:
-  #           - driver: nvidia
-  #             count: 1
-  #             capabilities: [gpu]
-
   infinity:
     image: infiniflow/infinity:nightly
     container_name: infinity
