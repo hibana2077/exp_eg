@@ -13,7 +13,7 @@ def add_emb_cond(condition: dict) -> dict:
         condition['dense'] = []
         condition['dense'].append({
             'field': 'embedding',
-            'query': embeddings_list[0],
+            'query': embeddings_list[0].tolist(),
             'element_type': 'float',
             'metric': EMB_SEARCH_METRIC,
             'topn': condition["text"][0]['topn']
@@ -21,7 +21,7 @@ def add_emb_cond(condition: dict) -> dict:
     else:
         condition['dense'].append({
             'field': 'embedding',
-            'query': embeddings_list[0],
+            'query': embeddings_list[0].tolist(),
             'element_type': 'float',
             'metric': EMB_SEARCH_METRIC,
             'topn': condition["text"][0]['topn']
