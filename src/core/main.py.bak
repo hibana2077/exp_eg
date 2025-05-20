@@ -19,16 +19,16 @@ from typing import List, Dict, Any, Optional, Union, Tuple
 # Import both Infinity and Qdrant implementations
 from utils.embedding import add_emb_cond
 from utils.indexing import indexing, add_index_into_condiction
-from utils.qdrant_indexing import qdrant_indexing, add_qdrant_index_into_condition 
+from utils.qdrant_indexing_fixed import qdrant_indexing, add_qdrant_index_into_condition 
 from utils.search import search as infinity_search
-from utils.qdrant_search import qdrant_search
+from utils.qdrant_search_fixed import qdrant_search
 from utils.parse import convert
 # Import both vector store implementations
 from utils.vec_store import save_vec_store as infinity_save_vec_store
 from utils.vec_store import list_all_tables, list_all_tables_mongo
-from utils.qdrant_store import save_vec_store as qdrant_save_vec_store
-from utils.qdrant_store import list_all_tables as qdrant_list_all_tables
-from utils.qdrant_store import list_all_tables_mongo as qdrant_list_all_tables_mongo
+from utils.qdrant_store_fixed import save_vec_store as qdrant_save_vec_store
+from utils.qdrant_store_fixed import list_all_tables as qdrant_list_all_tables
+from utils.qdrant_store_fixed import list_all_tables_mongo as qdrant_list_all_tables_mongo
 
 from cfg.emb_settings import IMG_CLIP_EMB_MODEL, IMG_EMB_SEARCH_METRIC
 
