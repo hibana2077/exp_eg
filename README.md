@@ -5,6 +5,7 @@ This system provides document vectorization, storage, and semantic search capabi
 ## Architecture
 
 The system consists of several components:
+
 - **Web Interface**: Streamlit-based UI for interacting with the system
 - **Core API**: Handles document processing, embedding, and vector operations
 - **Backend API**: Manages business logic and application state
@@ -24,7 +25,8 @@ Refer to the installation instructions in the [src/README.md](src/README.md) fil
 
 ## Vector Database
 
-The system uses Qdrant for vector storage and retrieval. Qdrant is a vector similarity search engine that provides:
+The system uses Qdrant for vector storage and retrieval. Qdrant is a vector similarity search engine that provides:]
+
 - Fast vector search with various distance metrics
 - Filtering support during search operations
 - Text indexing for hybrid search
