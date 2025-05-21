@@ -147,14 +147,14 @@ async def process_file(task_queue:dict):
             # Save the vector store
             logging.info(f"Converting Complete, saving to vector store...")
             status = save_vec_store_func(kb_name, file_name, data, meta_data)
-            logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}, images_table_name: {status['images_table_name']}")
+            logging.info(f"status: {status}, texts_collection_name: {status['texts_collection_name']}, images_collection_name: {status['images_collection_name']}")
             # Save the index information
             index_info["files"].append({
                 "file_name": file_name,
                 "status": status['status'],
-                "texts_table_name": status['texts_table_name'],
-                "images_table_name": status['images_table_name'],
-                "tables_table_name": status['tables_table_name'],
+                "texts_collection_name": status['texts_collection_name'],
+                "images_collection_name": status['images_collection_name'],
+                "tables_collection_name": status['tables_collection_name'],
             })
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
