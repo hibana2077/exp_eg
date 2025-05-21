@@ -144,6 +144,7 @@ async def process_file(task_queue:dict):
             logging.info(f"Processing file: {file_name}")
             data, meta_data = convert("/root/mortis/temp/" + file_name)
             # Save the vector store
+            logging.info(f"Converting Complete, saving to vector store...")
             status = save_vec_store_func(kb_name, file_name, data, meta_data)
             logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}, images_table_name: {status['images_table_name']}")
             # Save the index information
