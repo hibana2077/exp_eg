@@ -23,10 +23,10 @@ class QdrantVecStore:
         self.port = int(os.getenv("QDRANT_PORT", "6333"))
         self._connect_db()
         ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        self.texts_collection_name = f"file_{ts}_texts"
-        self.images_collection_name = f"file_{ts}_images"
-        self.tables_collection_name = f"file_{ts}_tables"
-        
+        self.texts_table_name = f"file_{ts}_texts"
+        self.images_table_name = f"file_{ts}_images"
+        self.tables_table_name = f"file_{ts}_tables"
+
         # Initialize embedding models
         self.text_model = TextEmbedding(model_name=EMB_MODEL)
         self.image_model = ImageEmbedding(model_name=IMG_EMB_MODEL)
@@ -107,13 +107,13 @@ class QdrantVecStore:
         """Save data to Qdrant and return status information"""
         status = {
             "status": "success",
-            "texts_table_name": self.texts_collection_name,
-            "images_table_name": self.images_collection_name,
-            "tables_table_name": self.tables_collection_name,
+            "texts_table_name": self.texts_table_name,
+            "images_table_name": self.images_table_name,
+            "tables_table_name": self.tables_table_name,
         }
-        logging.info(f"texts_table_name: {self.texts_collection_name}")
-        logging.info(f"images_table_name: {self.images_collection_name}")
-        logging.info(f"tables_table_name: {self.tables_collection_name}")
+        logging.info(f"texts_table_name: {self.texts_table_name}")
+        logging.info(f"images_table_name: {self.images_table_name}")
+        logging.info(f"tables_table_name: {self.tables_table_name}")
         logging.info(f"file_name: {file_name}")
         # Process text data
         pure_texts = [t.get("text", "") for t in data.get("texts", [])]
@@ -225,7 +225,8 @@ class QdrantVecStore:
 def save_vec_store(kb_name: str, file_name: str, data: dict, meta_data) -> dict:
     """Save data to vector store using QdrantVecStore"""
     logging.info(f"Saving to vector store: {kb_name}, {file_name}")
-    return QdrantVecStore(kb_name).save(file_name, data, meta_data)
+    qdrantvec = QdrantVecStore(kb_name)
+    return qdrantvec.save(file_name, data, meta_data)
 
 
 def list_all_tables(kb_name: str):
