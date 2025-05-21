@@ -16,19 +16,14 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
 
-# Import both Infinity and Qdrant implementations
+# Import Qdrant implementations
 from utils.embedding import add_emb_cond
-from utils.indexing import indexing, add_index_into_condiction
 from utils.qdrant_indexing import qdrant_indexing, add_qdrant_index_into_condition 
-from utils.search import search as infinity_search
 from utils.qdrant_search import qdrant_search
 from utils.parse import convert
-# Import both vector store implementations
-from utils.vec_store import save_vec_store as infinity_save_vec_store
-from utils.vec_store import list_all_tables, list_all_tables_mongo
-from utils.qdrant_store import save_vec_store as qdrant_save_vec_store
-from utils.qdrant_store import list_all_tables as qdrant_list_all_tables
-from utils.qdrant_store import list_all_tables_mongo as qdrant_list_all_tables_mongo
+from utils.qdrant_store import save_vec_store as save_vec_store_func
+from utils.qdrant_store import list_all_tables as list_all_tables_func
+from utils.qdrant_store import list_all_tables_mongo as list_all_tables_mongo_func
 
 from cfg.emb_settings import IMG_CLIP_EMB_MODEL, IMG_EMB_SEARCH_METRIC
 
@@ -58,23 +53,10 @@ logging.info("Starting FastAPI server...")
 
 Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
 
-# Select the appropriate functions based on the selected backend
-if USE_QDRANT:
-    # Use Qdrant implementations
-    search_func = qdrant_search
-    save_vec_store_func = qdrant_save_vec_store
-    list_all_tables_func = qdrant_list_all_tables
-    list_all_tables_mongo_func = qdrant_list_all_tables_mongo
-    indexing_func = qdrant_indexing
-    add_index_into_condition_func = add_qdrant_index_into_condition
-else:
-    # Use Infinity implementations
-    search_func = infinity_search
-    save_vec_store_func = infinity_save_vec_store
-    list_all_tables_func = list_all_tables
-    list_all_tables_mongo_func = list_all_tables_mongo
-    indexing_func = indexing
-    add_index_into_condition_func = add_index_into_condiction
+# Define function aliases
+search_func = qdrant_search
+indexing_func = qdrant_indexing
+add_index_into_condition_func = add_qdrant_index_into_condition
 
 @app.get("/")
 def read_root():
