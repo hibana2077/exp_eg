@@ -52,7 +52,10 @@ class QdrantVecStore:
                 if collection_name == self.texts_collection_name:
                     self.client.create_collection(
                         collection_name=collection_name,
-                        vectors_config=models.VectorParams(size=TEXT_EMB_DIM, distance=models.Distance.COSINE)
+                        vectors_config={
+                            "embed": models.VectorParams(size=TEXT_EMB_DIM, distance=models.Distance.COSINE),
+                            "cord": models.VectorParams(size=4, distance=models.Distance.EUCLID),
+                        }
                     )
                 elif collection_name == self.images_collection_name:
                     self.client.create_collection(
