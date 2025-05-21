@@ -18,37 +18,28 @@ def qdrant_search(
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
 ) -> Any:
     """
-    Flexible search function for Qdrant that supports multiple search conditions.
-    
-    Parameters:
-    -----------
-    db_name : str
-        Name of the database (not used in Qdrant, kept for compatibility)
-    collection_name : str
-        Name of the collection to search
-    select_cols : List[str]
-        Columns to return in the result (used for filtering response)
-    conditions : Dict[str, Any], optional
-        Dictionary of search conditions where:
-        - Keys are condition types: 'dense', 'text', 'filter'
-        Example:
-        {
-        'dense': [
-            {'field': 'embedding', 'query': query_vector, 'element_type': 'float', 'metric': 'cosine', 'topn': 3}
-        ],
-        'text': [
-            {'field': 'text', 'query': 'interest rate', 'topn': 3}
-        ],
-        'filter': ['year < 2024']
-        }
-    limit : int, optional
-        Maximum number of results to return
-    return_format : str, optional
-        Format to return results in: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), or "raw" (list)
-        
-    Returns:
-    --------
-    Search results in the specified format
+    Performs a flexible search in a Qdrant collection.
+
+    Supports dense vector search, text search, and filtering.
+
+    - **db_name**: Name of the database (for compatibility, not directly used by Qdrant).
+    - **collection_name**: The Qdrant collection to search within.
+    - **select_cols**: A list of column names to include in the results.
+    - **conditions**: A dictionary specifying search conditions.
+        - Example:
+          ```json
+          {
+            "dense": [
+              {"field": "embedding", "query": [0.1, 0.2, ...], "element_type": "float", "metric": "cosine", "topn": 3}
+            ],
+            "text": [
+              {"field": "text_content", "query": "search query text", "topn": 3}
+            ],
+            "filter": ["year < 2024", "category == \\"electronics\\""]
+          }
+          ```
+    - **limit**: The maximum number of results to return.
+    - **return_format**: The desired format for the results ("pl", "pd", "arrow", "raw").
     """
     QDRANT_HOST = os.getenv("QDRANT_HOST", "qdrant")
     QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
