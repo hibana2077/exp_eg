@@ -343,7 +343,8 @@ async def search(data:dict):
             pprint.pprint(tables)
         return {"status": "success", "tables": tables}
     except Exception as e:
-        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        # return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        return {"status": "error", "message": str(traceback.format_exc())}
 
 if __name__ == "__main__":
     
