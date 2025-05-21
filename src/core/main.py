@@ -222,7 +222,7 @@ async def search(data:dict):
             # Text data
             index_name = indexing_func(
                 db_name=data["kb_name"],
-                table_name=table[0]
+                collection_name=table[0]
             )
             update_condition = add_index_into_condition_func(
                 data["conditions"],
@@ -232,7 +232,7 @@ async def search(data:dict):
             # search
             result = search_func(
                 db_name=data["kb_name"],
-                table_name=table[0],
+                collection_name=table[0],
                 select_cols=data["select_cols"],
                 conditions=update_condition,
                 limit=data["limit"],
