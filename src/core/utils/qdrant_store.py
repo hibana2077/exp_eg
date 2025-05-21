@@ -50,17 +50,25 @@ class QdrantVecStore:
             except Exception as e:
                 print(f"Creating collection {collection_name}")
                 if collection_name == self.texts_collection_name:
-                    emb_dim = TEXT_EMB_DIM
+                    self.client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config={
+                            "embed": models.VectorParams(size=TEXT_EMB_DIM, distance=models.Distance.COSINE),
+                            "cord": models.VectorParams(size=4, distance=models.Distance.EUCLID),
+                        }
+                    )
                 elif collection_name == self.images_collection_name:
-                    emb_dim = IMG_EMB_DIM
+                    self.client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config=models.VectorParams(size=IMG_EMB_DIM, distance=models.Distance.COSINE)
+                    )
                 elif collection_name == self.tables_collection_name:
-                    emb_dim = TABLE_EMB_DIM
+                    self.client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config=models.VectorParams(size=TABLE_EMB_DIM, distance=models.Distance.COSINE)
+                    )
                 else:
                     raise ValueError(f"Unknown collection name: {collection_name}")
-                self.client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config=models.VectorParams(size=emb_dim, distance=models.Distance.COSINE)
-                )
 
     def _common_transform(self, data: dict) -> dict:
         """Transform common fields between different data types"""
