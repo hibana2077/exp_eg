@@ -5,6 +5,7 @@ import pprint
 import uvicorn
 import time
 import pymongo
+import traceback
 
 import pandas as pd
 import numpy as np
@@ -165,7 +166,8 @@ async def process_file(task_queue:dict):
         )
         return {"status": "success", "message": "File processed successfully"}
     except Exception as e:
-        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        # return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        return {"status": "error", "message": str(traceback.format_exc())}
 
 @app.get("/list_tables/{kb_name}")
 async def list_tables(kb_name:str):
