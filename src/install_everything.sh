@@ -24,10 +24,6 @@ curl -sSL https://get.docker.com | sh && print_status "Docker" "latest"
 echo "Installing btop and python3-pip..."
 apt install btop python3-pip -y && print_status "btop" "latest" && print_status "python3-pip" "latest"
 
-# Configure git
-echo "Configuring git..."
-git config --global user.email "hibana2077@gmail.com" && git config --global user.name "hibana2077" && print_status "git config" "completed"
-
 # Install Docker Compose
 echo "Installing Docker Compose..."
 VERSION=$(curl --silent https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*\d')
