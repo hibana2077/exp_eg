@@ -8,19 +8,12 @@ from qdrant_client.http import models
 
 def qdrant_indexing(db_name: str, collection_name: str):
     """
-    Create index for text field in a Qdrant collection.
-    
-    Parameters:
-    -----------
-    db_name : str
-        Name of the database (not used, kept for compatibility)
-    collection_name : str
-        Name of the collection to create index for
-        
-    Returns:
-    --------
-    index_name : str
-        Name of the created index
+    Creates a payload index on the 'text' field of a Qdrant collection.
+
+    This is typically done to optimize text-based searches.
+
+    - **db_name**: Name of the database (for compatibility, not directly used by Qdrant).
+    - **collection_name**: The Qdrant collection where the index will be created.
     """
     QDRANT_HOST = os.getenv("QDRANT_HOST", "qdrant")
     QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
@@ -61,21 +54,13 @@ def qdrant_indexing(db_name: str, collection_name: str):
 
 def add_qdrant_index_into_condition(condition: Dict[str, Any], index_name: str) -> Dict[str, Any]:
     """
-    Update search condition with index name.
-    For Qdrant, we don't need to specify the index name in the search condition,
-    but we keep this function for compatibility.
-    
-    Parameters:
-    -----------
-    condition : Dict[str, Any]
-        Search condition to update
-    index_name : str
-        Name of the index to use
-        
-    Returns:
-    --------
-    Dict[str, Any]
-        Updated search condition
+    Updates search conditions with an index name.
+
+    Note: For Qdrant, this function is a placeholder for compatibility and doesn't
+    modify the conditions, as Qdrant doesn't require explicit index naming in search queries.
+
+    - **condition**: The search condition dictionary to potentially update.
+    - **index_name**: The name of the index (unused in Qdrant's case).
     """
     # No need to modify conditions for Qdrant
     # Keeping function for compatibility
