@@ -224,6 +224,7 @@ class QdrantVecStore:
 # Backward compatibility functions
 def save_vec_store(kb_name: str, file_name: str, data: dict, meta_data) -> dict:
     """Save data to vector store using QdrantVecStore"""
+    logging.info(f"Saving to vector store: {kb_name}, {file_name}")
     return QdrantVecStore(kb_name).save(file_name, data, meta_data)
 
 
