@@ -152,9 +152,9 @@ async def process_file(task_queue:dict):
             index_info["files"].append({
                 "file_name": file_name,
                 "status": status['status'],
-                "texts_collection_name": status['texts_collection_name'],
-                "images_collection_name": status['images_collection_name'],
-                "tables_collection_name": status['tables_collection_name'],
+                "texts_table_name": status['texts_collection_name'],
+                "images_table_name": status['images_collection_name'],
+                "tables_table_name": status['tables_collection_name'],
             })
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
