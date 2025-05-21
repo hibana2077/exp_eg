@@ -10,7 +10,7 @@ from qdrant_client.http import models
 from transformers import AutoTokenizer
 from docling.chunking import HybridChunker  # type: ignore
 from fastembed import TextEmbedding, ImageEmbedding  # type: ignore
-from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS, EMB_DIM
+from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS, TEXT_EMB_DIM, IMG_EMB_DIM, TABLE_EMB_DIM
 from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
 from .parse import table_convert, merge_adjacent_tables
 
@@ -49,9 +49,17 @@ class QdrantVecStore:
                 print(f"Collection {collection_name} already exists")
             except Exception as e:
                 print(f"Creating collection {collection_name}")
+                if collection_name == self.texts_collection_name:
+                    emb_dim = TEXT_EMB_DIM
+                elif collection_name == self.images_collection_name:
+                    emb_dim = IMG_EMB_DIM
+                elif collection_name == self.tables_collection_name:
+                    emb_dim = TABLE_EMB_DIM
+                else:
+                    raise ValueError(f"Unknown collection name: {collection_name}")
                 self.client.create_collection(
                     collection_name=collection_name,
-                    vectors_config=models.VectorParams(size=EMB_DIM, distance=models.Distance.COSINE)
+                    vectors_config=models.VectorParams(size=emb_dim, distance=models.Distance.COSINE)
                 )
 
     def _common_transform(self, data: dict) -> dict:
