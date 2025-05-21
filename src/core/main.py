@@ -192,6 +192,7 @@ async def search(data:dict):
     select_cols: List[str],
     conditions: Dict[str, Any] = None,
     do_image_search: bool = False,
+    enable_cord_hook: bool = False,
     limit: int = 10,
     return_format: str = "pl"  # Options: "pl" (polars), "pd" (pandas), "arrow" (pyarrow), "raw" (list)
 
@@ -215,6 +216,7 @@ async def search(data:dict):
     }
     ```
     """
+    # TODO: Add cord hook function in text data
     pprint.pprint(data)
     try:
         return_tables = []
