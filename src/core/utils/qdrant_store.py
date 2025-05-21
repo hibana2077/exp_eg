@@ -23,9 +23,9 @@ class QdrantVecStore:
         self.port = int(os.getenv("QDRANT_PORT", "6333"))
         self._connect_db()
         ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        self.texts_table_name = f"file_{ts}_texts"
-        self.images_table_name = f"file_{ts}_images"
-        self.tables_table_name = f"file_{ts}_tables"
+        self.texts_collection_name = f"file_{ts}_texts"
+        self.images_collection_name = f"file_{ts}_images"
+        self.tables_collection_name = f"file_{ts}_tables"
 
         # Initialize embedding models
         self.text_model = TextEmbedding(model_name=EMB_MODEL)
@@ -107,13 +107,13 @@ class QdrantVecStore:
         """Save data to Qdrant and return status information"""
         status = {
             "status": "success",
-            "texts_table_name": self.texts_table_name,
-            "images_table_name": self.images_table_name,
-            "tables_table_name": self.tables_table_name,
+            "texts_collection_name": self.texts_collection_name,
+            "images_collection_name": self.images_collection_name,
+            "tables_collection_name": self.tables_collection_name,
         }
-        logging.info(f"texts_table_name: {self.texts_table_name}")
-        logging.info(f"images_table_name: {self.images_table_name}")
-        logging.info(f"tables_table_name: {self.tables_table_name}")
+        logging.info(f"texts_collection_name: {self.texts_collection_name}")
+        logging.info(f"images_collection_name: {self.images_collection_name}")
+        logging.info(f"tables_collection_name: {self.tables_collection_name}")
         logging.info(f"file_name: {file_name}")
         # Process text data
         pure_texts = [t.get("text", "") for t in data.get("texts", [])]
@@ -136,8 +136,8 @@ class QdrantVecStore:
                     points=points
                 )
         else:
-            status["texts_table_name"] = ""
-        
+            status["texts_collection_name"] = ""
+
         # Process image data
         pics = data.get("pictures", [])
         if pics:
@@ -156,8 +156,8 @@ class QdrantVecStore:
                     points=points
                 )
         else:
-            status["images_table_name"] = ""
-        
+            status["images_collection_name"] = ""
+
         # Process table data
         tables = []
         if getattr(meta_data.document, "tables", None):
@@ -189,8 +189,8 @@ class QdrantVecStore:
                     points=points
                 )
         else:
-            status["tables_table_name"] = ""
-        
+            status["tables_collection_name"] = ""
+
         return status
 
     @staticmethod
