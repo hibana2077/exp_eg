@@ -5,26 +5,43 @@
 ```bash
 cp .env-template .env
 bash ./install_everything.sh # or sudo bash ./install_everything.sh
-bash ./setup.bash # or sudo bash ./setup.sh
+bash ./setup.sh # or sudo bash ./setup.sh
 docker-compose up -d --build
 ```
 
 ## Environment Variables
 
 Please copy `.env-template` to `.env` and change the values accordingly.
-Also, make sure modify the `minio-config.json` file to match your MinIO configuration.
+Also, make sure to modify the `minio-config.json` file to match your MinIO configuration.
 
-## Infinity DB config
+## Vector Database Configuration
 
-The config file is located at `src/infinity_conf.toml`, it well be used to configure the Infinity DB server.
-Please review the file and change the values accordingly.
+This system uses Qdrant as the vector database. The database is automatically configured through the docker-compose setup.
 
-[Original Infinity DB config](https://github.com/infiniflow/infinity/blob/main/docs/references/configurations.mdx#a-configuration-file-example)
+Key configuration points:
+- Host: `db_qdrant`
+- Port: `6333`
+- Storage path: `/data/qdrant-data`
 
 ## Auto Script
 
-After setting up the environment variables and config, you can run the following command to put config to the right place:
+After setting up the environment variables, you can run the following commands to set up the system:
 
 ```bash
 bash ./setup.sh
 ```
+
+This will:
+1. Create necessary data directories
+2. Set up environment variables if not already done
+3. Start all services with Docker Compose
+
+## Services
+
+The system consists of the following services:
+- `core` - Backend API for vector operations
+- `web` - Frontend web interface
+- `backend` - Backend API for business logic
+- `db_mongo` - MongoDB for metadata storage
+- `db_qdrant` - Qdrant vector database
+- `minio` - Object storage for files

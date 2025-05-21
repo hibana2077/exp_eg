@@ -9,8 +9,8 @@ services:
       HOST: "0.0.0.0"
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      INFINITY_HOST: "infinity"
-      INFINITY_PORT: 23817
+      QDRANT_HOST: "db_qdrant"
+      QDRANT_PORT: 6333
       MONGO_SERVER: "mongodb://db_mongo:27017"
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -58,8 +58,10 @@ services:
       MONGO_SERVER: "mongodb://db_mongo:27017"
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      INFINITY_HOST: "infinity"
-      INFINITY_PORT: 23817
+      
+      
+      QDRANT_HOST: "db_qdrant"
+      QDRANT_PORT: 6333
       # REDIS_HOST: "db_redis"
       # REDIS_PORT: 6379
       DATABASE_URL: "sqlite:////app/data/users.db"
@@ -81,30 +83,20 @@ services:
     
   db_qdrant:
     image: qdrant/qdrant:latest
-    container_name: qdrant
+    container_name: db_qdrant
     ports:
       - "6333:6333"
+      - "6334:6334"
     networks:
       - mynet
     volumes:
       - /data/qdrant-data:/qdrant/storage
     restart: always
-
-  infinity:
-    image: infiniflow/infinity:nightly
-    container_name: infinity
-    command: -f /var/infinity/infinity_conf.toml
-    volumes:
-      - /var/infinity/:/var/infinity
-    ulimits:
-      nofile:
-        soft: 500000
-        hard: 500000
-    ports:
-      - "23817:23817"
-    networks:
-      - mynet
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   minio:
     image: quay.io/minio/minio

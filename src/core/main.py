@@ -5,6 +5,7 @@ import pprint
 import uvicorn
 import time
 import pymongo
+import traceback
 
 import pandas as pd
 import numpy as np
@@ -16,13 +17,19 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
 
+# Import Qdrant implementations
 from utils.embedding import add_emb_cond
-from utils.indexing import indexing, add_index_into_condiction
-from utils.search import search as search_func
+from utils.qdrant_indexing import qdrant_indexing, add_qdrant_index_into_condition 
+from utils.qdrant_search import qdrant_search
 from utils.parse import convert
-from utils.vec_store import save_vec_store, list_all_tables, list_all_tables_mongo
+from utils.qdrant_store import save_vec_store as save_vec_store_func
+from utils.qdrant_store import list_all_tables as list_all_tables_func
+from utils.qdrant_store import list_all_tables_mongo as list_all_tables_mongo_func
 
 from cfg.emb_settings import IMG_CLIP_EMB_MODEL, IMG_EMB_SEARCH_METRIC
+
+# Set to True to use Qdrant, False to use Infinity
+USE_QDRANT = True
 
 HOST = os.getenv("HOST", "127.0.0.1")
 MINIO_USER = os.getenv("MINIO_ROOT_USER", "root")
@@ -46,6 +53,11 @@ logging.basicConfig(level=logging.INFO)
 logging.info("Starting FastAPI server...")
 
 Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
+
+# Define function aliases
+search_func = qdrant_search
+indexing_func = qdrant_indexing
+add_index_into_condition_func = add_qdrant_index_into_condition
 
 @app.get("/")
 def read_root():
@@ -133,15 +145,16 @@ async def process_file(task_queue:dict):
             logging.info(f"Processing file: {file_name}")
             data, meta_data = convert("/root/mortis/temp/" + file_name)
             # Save the vector store
-            status = save_vec_store(kb_name, file_name, data, meta_data)
-            logging.info(f"status: {status}, texts_table_name: {status['texts_table_name']}, images_table_name: {status['images_table_name']}")
+            logging.info(f"Converting Complete, saving to vector store...")
+            status = save_vec_store_func(kb_name, file_name, data, meta_data)
+            logging.info(f"status: {status}, texts_collection_name: {status['texts_collection_name']}, images_collection_name: {status['images_collection_name']}")
             # Save the index information
             index_info["files"].append({
                 "file_name": file_name,
                 "status": status['status'],
-                "texts_table_name": status['texts_table_name'],
-                "images_table_name": status['images_table_name'],
-                "tables_table_name": status['tables_table_name'],
+                "texts_table_name": status['texts_collection_name'],
+                "images_table_name": status['images_collection_name'],
+                "tables_table_name": status['tables_collection_name'],
             })
             # Remove file
             os.remove("/root/mortis/temp/" + file_name)
@@ -153,7 +166,8 @@ async def process_file(task_queue:dict):
         )
         return {"status": "success", "message": "File processed successfully"}
     except Exception as e:
-        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        # return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        return {"status": "error", "message": str(traceback.format_exc())}
 
 @app.get("/list_tables/{kb_name}")
 async def list_tables(kb_name:str):
@@ -165,7 +179,7 @@ async def list_tables(kb_name:str):
     """
     try:
         # tables = list_all_tables(kb_name)
-        tables = list_all_tables_mongo(kb_name)
+        tables = list_all_tables_mongo_func(kb_name)
         return {"status": "success", "tables": tables}
     except Exception as e:
         return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
@@ -206,11 +220,11 @@ async def search(data:dict):
         return_tables = []
         for table in data["tables"]:
             # Text data
-            index_name = indexing(
+            index_name = indexing_func(
                 db_name=data["kb_name"],
-                table_name=table[0]
+                collection_name=table[0]
             )
-            update_condition = add_index_into_condiction(
+            update_condition = add_index_into_condition_func(
                 data["conditions"],
                 index_name
             )
@@ -218,7 +232,7 @@ async def search(data:dict):
             # search
             result = search_func(
                 db_name=data["kb_name"],
-                table_name=table[0],
+                collection_name=table[0],
                 select_cols=data["select_cols"],
                 conditions=update_condition,
                 limit=data["limit"],
@@ -248,11 +262,11 @@ async def search(data:dict):
                     "table_name": table[2],
                     "result": result
                 })
-                index_name = indexing(
+                index_name = indexing_func(
                     db_name=data["kb_name"],
-                    table_name=table[2]
+                    collection_name=table[2]
                 )
-                update_condition = add_index_into_condiction(
+                update_condition = add_index_into_condition_func(
                     data["conditions"],
                     index_name
                 )
@@ -260,7 +274,7 @@ async def search(data:dict):
                 # search
                 result = search_func(
                     db_name=data["kb_name"],
-                    table_name=table[2],
+                    collection_name=table[2],
                     select_cols=data["select_cols"],
                     conditions=update_condition,
                     limit=data["limit"],
@@ -288,7 +302,7 @@ async def search(data:dict):
                 clip_text_model = TextEmbedding(IMG_CLIP_EMB_MODEL)
                 image_result = search_func(
                     db_name=data["kb_name"],
-                    table_name=table[1],
+                    collection_name=table[1],
                     select_cols=["image"],
                     conditions={
                         "dense": [
@@ -329,7 +343,8 @@ async def search(data:dict):
             pprint.pprint(tables)
         return {"status": "success", "tables": tables}
     except Exception as e:
-        return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        # return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
+        return {"status": "error", "message": str(traceback.format_exc())}
 
 if __name__ == "__main__":
     
