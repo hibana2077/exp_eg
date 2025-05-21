@@ -70,9 +70,7 @@ def qdrant_search(
     
     # Set up search parameters
     search_vector = None
-    search_params = {
-        "limit": limit,
-    }
+    search_params = {}
     
     # Parse conditions
     filter_conditions = None
@@ -152,8 +150,6 @@ def qdrant_search(
             search_vector = search_vector.tolist()
     
     # Perform search
-    print(limit)
-    assert type(limit) == int, "Limit must be an integer"
     if search_vector:
         search_results = client.search(
             collection_name=collection_name,
