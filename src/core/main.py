@@ -264,7 +264,7 @@ async def search(data:dict):
                 })
                 index_name = indexing_func(
                     db_name=data["kb_name"],
-                    table_name=table[2]
+                    collection_name=table[2]
                 )
                 update_condition = add_index_into_condition_func(
                     data["conditions"],
@@ -274,7 +274,7 @@ async def search(data:dict):
                 # search
                 result = search_func(
                     db_name=data["kb_name"],
-                    table_name=table[2],
+                    collection_name=table[2],
                     select_cols=data["select_cols"],
                     conditions=update_condition,
                     limit=data["limit"],
@@ -302,7 +302,7 @@ async def search(data:dict):
                 clip_text_model = TextEmbedding(IMG_CLIP_EMB_MODEL)
                 image_result = search_func(
                     db_name=data["kb_name"],
-                    table_name=table[1],
+                    collection_name=table[1],
                     select_cols=["image"],
                     conditions={
                         "dense": [
