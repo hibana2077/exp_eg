@@ -21,11 +21,11 @@ class QdrantVecStore:
         self.kb_name = kb_name.lower()
         self.server = os.getenv("QDRANT_HOST", "qdrant")
         self.port = int(os.getenv("QDRANT_PORT", "6333"))
-        self._connect_db()
         ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         self.texts_collection_name = f"file_{ts}_texts"
         self.images_collection_name = f"file_{ts}_images"
         self.tables_collection_name = f"file_{ts}_tables"
+        self._connect_db()
 
         # Initialize embedding models
         self.text_model = TextEmbedding(model_name=EMB_MODEL)
