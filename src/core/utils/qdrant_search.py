@@ -73,6 +73,7 @@ def qdrant_search(
     search_params = {
         "limit": limit,
     }
+    print(limit)
     assert type(limit) == int, "Limit must be an integer"
     
     # Parse conditions
