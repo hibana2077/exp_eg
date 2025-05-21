@@ -2,7 +2,7 @@ import os
 import datetime
 import base64
 import io
-import pprint
+import logging
 from tempfile import NamedTemporaryFile
 import pymongo
 from qdrant_client import QdrantClient
@@ -14,6 +14,7 @@ from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CH
 from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
 from .parse import table_convert, merge_adjacent_tables
 
+logging.basicConfig(level=logging.INFO)
 
 class QdrantVecStore:
     def __init__(self, kb_name: str):
@@ -110,7 +111,10 @@ class QdrantVecStore:
             "images_table_name": self.images_collection_name,
             "tables_table_name": self.tables_collection_name,
         }
-        
+        logging.info(f"texts_table_name: {self.texts_collection_name}")
+        logging.info(f"images_table_name: {self.images_collection_name}")
+        logging.info(f"tables_table_name: {self.tables_collection_name}")
+        logging.info(f"file_name: {file_name}")
         # Process text data
         pure_texts = [t.get("text", "") for t in data.get("texts", [])]
         if pure_texts:
