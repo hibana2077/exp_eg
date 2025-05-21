@@ -106,9 +106,9 @@ class QdrantVecStore:
         """Save data to Qdrant and return status information"""
         status = {
             "status": "success",
-            "texts_collection_name": self.texts_collection_name,
-            "images_collection_name": self.images_collection_name,
-            "tables_collection_name": self.tables_collection_name,
+            "texts_table_name": self.texts_collection_name,
+            "images_table_name": self.images_collection_name,
+            "tables_table_name": self.tables_collection_name,
         }
         
         # Process text data
@@ -132,7 +132,7 @@ class QdrantVecStore:
                     points=points
                 )
         else:
-            status["texts_collection_name"] = ""
+            status["texts_table_name"] = ""
         
         # Process image data
         pics = data.get("pictures", [])
@@ -152,7 +152,7 @@ class QdrantVecStore:
                     points=points
                 )
         else:
-            status["images_collection_name"] = ""
+            status["images_table_name"] = ""
         
         # Process table data
         tables = []
@@ -185,7 +185,7 @@ class QdrantVecStore:
                     points=points
                 )
         else:
-            status["tables_collection_name"] = ""
+            status["tables_table_name"] = ""
         
         return status
 
