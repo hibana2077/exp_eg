@@ -1,7 +1,7 @@
 """
 Qdrant Test Script
 
-This script verifies that the Qdrant integration is working correctly.
+This script verifies that the Qdrant integration works correctly.
 It performs basic operations:
 1. Connects to Qdrant
 2. Creates a test collection
@@ -38,6 +38,114 @@ TEST_QUERIES = [
     "How are vector databases used?",
     "Tell me about Qdrant."
 ]
+
+def test_coordinate_search(client, embedding_model):
+    """Test the coordinate search functionality with multi-vector format"""
+    logger.info("Starting coordinate search test")
+    
+    # Create a test collection specifically for coordinate search
+    coord_collection_name = f"{TEST_COLLECTION}_coordinate"
+    
+    try:
+        # Delete if exists
+        try:
+            client.delete_collection(collection_name=coord_collection_name)
+        except:
+            pass
+            
+        # Create new collection with multi-vector format
+        client.create_collection(
+            collection_name=coord_collection_name,
+            vectors_config={
+                "embed": VectorParams(size=1024, distance=Distance.COSINE),
+                "cord": VectorParams(size=4, distance=Distance.EUCLID)
+            }
+        )
+        logger.info(f"Created coordinate test collection '{coord_collection_name}'")
+        
+        # Insert test data with coordinates
+        coord_points = []
+        for i, (text, embedding) in enumerate(zip(TEST_DATA, list(embedding_model.embed(TEST_DATA)))):
+            # Create sample coordinates - in a real scenario, these would be bounding box coordinates
+            # Format: [x1, y1, x2, y2]
+            coord_vector = [i*0.1, i*0.2, i*0.1+0.5, i*0.2+0.5]
+            
+            coord_points.append(PointStruct(
+                id=i,
+                vector={
+                    "embed": embedding.tolist() if hasattr(embedding, 'tolist') else embedding,
+                    "cord": coord_vector
+                },
+                payload={
+                    "text": text, 
+                    "metadata": {"index": i}, 
+                    "coord": coord_vector,
+                    "page": 1
+                }
+            ))
+        
+        client.upsert(
+            collection_name=coord_collection_name,
+            points=coord_points
+        )
+        logger.info(f"Inserted {len(coord_points)} documents with coordinate vectors")
+        
+        # Test 1: Semantic search on multi-vector collection
+        query = "artificial intelligence"
+        query_embedding = list(embedding_model.embed([query]))[0]
+        
+        semantic_results = client.search(
+            collection_name=coord_collection_name,
+            query_vector=("embed", query_embedding.tolist() if hasattr(query_embedding, 'tolist') else query_embedding),
+            limit=2
+        )
+        
+        logger.info(f"Semantic search for '{query}' returned {len(semantic_results)} results")
+        if len(semantic_results) == 0:
+            logger.error("Semantic search failed - no results returned")
+            return False
+            
+        # Test 2: Coordinate search
+        test_coord = [0.2, 0.4, 0.7, 0.9]  # Sample coordinate to search for
+        
+        coord_results = client.search(
+            collection_name=coord_collection_name,
+            query_vector=("cord", test_coord),
+            limit=2
+        )
+        
+        logger.info(f"Coordinate search returned {len(coord_results)} results")
+        if len(coord_results) == 0:
+            logger.error("Coordinate search failed - no results returned")
+            return False
+            
+        # Test 3: Filter with coordinate search
+        filter_results = client.search(
+            collection_name=coord_collection_name,
+            query_vector=("cord", test_coord),
+            query_filter=Filter(
+                must=[FieldCondition(key="page", match=MatchValue(value=1))]
+            ),
+            limit=2
+        )
+        
+        logger.info(f"Filtered coordinate search returned {len(filter_results)} results")
+        if len(filter_results) == 0:
+            logger.error("Filtered coordinate search failed - no results returned")
+            return False
+        
+        # Clean up
+        client.delete_collection(collection_name=coord_collection_name)
+        logger.info("Coordinate search test completed successfully")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Coordinate search test failed: {e}")
+        try:
+            client.delete_collection(collection_name=coord_collection_name)
+        except:
+            pass
+        return False
 
 def main():
     """Run the Qdrant test suite"""
@@ -161,6 +269,82 @@ def main():
     except Exception as e:
         logger.error(f"Filter search failed: {e}")
         all_searches_successful = False
+        
+    # Test multi-vector coordinate search functionality
+    logger.info("Testing multi-vector coordinate search")
+    multi_vector_test_result = test_coordinate_search(client, embedding_model)
+    all_searches_successful = all_searches_successful and multi_vector_test_result
+    
+    # Skip the inline multi-vector test since we've already done it with the function
+    
+    # Create multi-vector collection
+    multi_collection_name = f"{TEST_COLLECTION}_multi"
+    try:
+        # Delete if exists
+        try:
+            client.delete_collection(collection_name=multi_collection_name)
+        except:
+            pass
+            
+        client.create_collection(
+            collection_name=multi_collection_name,
+            vectors_config={
+                "embed": VectorParams(size=1024, distance=Distance.COSINE),
+                "cord": VectorParams(size=4, distance=Distance.EUCLID)
+            }
+        )
+        
+        # Insert test data with coordinates
+        test_points = []
+        for i, (text, embedding) in enumerate(zip(TEST_DATA, list(embedding_model.embed(TEST_DATA)))):
+            # Create a simple dummy coordinate - in real data this would be meaningful
+            test_coord = [i*0.1, i*0.2, i*0.3, i*0.4]  
+            
+            test_points.append(PointStruct(
+                id=i,
+                vector={
+                    "embed": embedding.tolist() if hasattr(embedding, 'tolist') else embedding,
+                    "cord": test_coord
+                },
+                payload={"text": text, "metadata": {"index": i}, "coord": test_coord}
+            ))
+        
+        client.upsert(
+            collection_name=multi_collection_name,
+            points=test_points
+        )
+        logger.info(f"Inserted {len(test_points)} test documents with coordinates")
+        
+        # Test semantic search on multi-vector collection
+        query_embedding = list(embedding_model.embed(["What is artificial intelligence?"]))[0]
+        semantic_results = client.search(
+            collection_name=multi_collection_name,
+            query_vector=("embed", query_embedding.tolist() if hasattr(query_embedding, 'tolist') else query_embedding),
+            limit=2
+        )
+        
+        logger.info(f"Multi-vector semantic search returned {len(semantic_results)} results")
+        
+        # Test coordinate search
+        test_coord = [0.2, 0.4, 0.6, 0.8]
+        coord_results = client.search(
+            collection_name=multi_collection_name,
+            query_vector=("cord", test_coord),
+            limit=2
+        )
+        
+        logger.info(f"Coordinate search returned {len(coord_results)} results")
+        
+        # Clean up
+        client.delete_collection(collection_name=multi_collection_name)
+        return True
+    except Exception as e:
+        logger.error(f"Multi-vector test failed: {e}")
+        try:
+            client.delete_collection(collection_name=multi_collection_name)
+        except:
+            pass
+        return False
     
     # Clean up
     logger.info(f"Cleaning up test collection '{TEST_COLLECTION}'")

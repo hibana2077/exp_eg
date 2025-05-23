@@ -10,7 +10,7 @@ from qdrant_client.http import models
 from transformers import AutoTokenizer
 from docling.chunking import HybridChunker  # type: ignore
 from fastembed import TextEmbedding, ImageEmbedding  # type: ignore
-from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS, EMB_DIM
+from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS, TEXT_EMB_DIM, IMG_EMB_DIM, TABLE_EMB_DIM
 from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
 from .parse import table_convert, merge_adjacent_tables
 
@@ -48,10 +48,26 @@ class QdrantVecStore:
                 print(f"Collection {collection_name} already exists")
             except Exception as e:
                 print(f"Creating collection {collection_name}")
-                self.client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config=models.VectorParams(size=EMB_DIM, distance=models.Distance.COSINE)
-                )
+                if collection_name == self.texts_collection_name:
+                    self.client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config={
+                            "embed": models.VectorParams(size=TEXT_EMB_DIM, distance=models.Distance.COSINE),
+                            "cord": models.VectorParams(size=4, distance=models.Distance.EUCLID),
+                        }
+                    )
+                elif collection_name == self.images_collection_name:
+                    self.client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config=models.VectorParams(size=IMG_EMB_DIM, distance=models.Distance.COSINE)
+                    )
+                elif collection_name == self.tables_collection_name:
+                    self.client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config=models.VectorParams(size=TABLE_EMB_DIM, distance=models.Distance.COSINE)
+                    )
+                else:
+                    raise ValueError(f"Unknown collection name: {collection_name}")
 
     def _common_transform(self, data: dict) -> dict:
         """Transform common fields between different data types"""
@@ -116,13 +132,17 @@ class QdrantVecStore:
         if pure_texts:
             embeds = list(self.text_model.embed(pure_texts))
             texts = [self.text_transform(t) for t in data.get("texts", [])]
-            
+            cords = [t.get("coord", []) for t in texts]
+
             # Insert into Qdrant
             points = []
             for i, text in enumerate(texts):
                 points.append(models.PointStruct(
                     id=i,
-                    vector=embeds[i].tolist() if hasattr(embeds[i], 'tolist') else embeds[i],
+                    vector={
+                        "embed": embeds[i].tolist() if hasattr(embeds[i], 'tolist') else embeds[i],
+                        "cord": cords[i]
+                    },
                     payload=text
                 ))
             
