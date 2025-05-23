@@ -17,12 +17,13 @@ from docling.models.tesseract_ocr_model import TesseractOcrOptions
 from docling_core.types.doc import ImageRefMode, PictureItem, TableItem
 import tesserocr
 
+CORES = os.cpu_count()-1 or 1
 
 def convert(file_loc:str) -> dict:
     pipeline_options = PdfPipelineOptions()
 
     accelerator_options = AcceleratorOptions(
-        num_threads=8, device=AcceleratorDevice.AUTO
+        num_threads=CORES, device=AcceleratorDevice.AUTO
     )
 
     pipeline_options.images_scale = 2.0
