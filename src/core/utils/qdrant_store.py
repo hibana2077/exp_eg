@@ -136,13 +136,17 @@ class QdrantVecStore:
         if pure_texts:
             embeds = list(self.text_model.embed(pure_texts))
             texts = [self.text_transform(t) for t in data.get("texts", [])]
-            
+            cords = [t.get("coord", []) for t in texts]
+
             # Insert into Qdrant
             points = []
             for i, text in enumerate(texts):
                 points.append(models.PointStruct(
                     id=i,
-                    vector=embeds[i].tolist() if hasattr(embeds[i], 'tolist') else embeds[i],
+                    vector={
+                        "embed": embeds[i].tolist() if hasattr(embeds[i], 'tolist') else embeds[i],
+                        "cord": cords[i]
+                    },
                     payload=text
                 ))
             
