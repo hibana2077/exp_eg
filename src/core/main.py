@@ -267,10 +267,10 @@ async def search(data:dict):
                         coord_result = coordinate_search_func(
                             collection_name = table[0],
                             coordinate_vector = coord,
-                            limit = 1,
+                            limit = 2,
                             return_format = "pl"
                         )
-                        nearby_texts = coord_result[0].to_dict(as_series=False)['text'][0]
+                        nearby_texts = coord_result[0].to_dict(as_series=False)['text'][-1]
                         # Add nearby texts to the result
                         result['text'][idx] += f"\n\n{nearby_texts}"
             # add the result to the return_tables
