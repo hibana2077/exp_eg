@@ -96,19 +96,24 @@ if __name__ == "__main__":
     # Test example
     title_1 = [72, 619.49, 193.297, 608.742]
     text_1 = [72, 599.431, 540.004, 488.048]
+    text_2_3 = [72, 629.619, 540, 546.622]
     title_3 = [72, 480.013, 281.359, 469.265]
 
     process_func = one_y_point
 
     process_title_1 = process_func(title_1)
     process_text_1 = process_func(text_1)
+    process_text_2_3 = process_func(text_2_3)
     process_title_3 = process_func(title_3)
     print(f"Processed title_1: {process_title_1}")
     print(f"Processed text_1: {process_text_1}")
+    print(f"Processed text_2_3: {process_text_2_3}")
     print(f"Processed title_3: {process_title_3}")
 
     # Calculate euclidean distances
     dist_text1_to_title1 = euclidean_distance(process_text_1, process_title_1)
     dist_title3_to_title1 = euclidean_distance(process_title_3, process_title_1)
+    dist_text2_to_title1 = euclidean_distance(process_text_2_3, process_title_1)
     print("text_1 -> title_1 distance:", dist_text1_to_title1)
     print("title_3 -> title_1 distance:", dist_title3_to_title1)
+    print("text_2_3 -> title_1 distance:", dist_text2_to_title1)

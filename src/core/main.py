@@ -267,6 +267,7 @@ async def search(data:dict):
                         coord_result = coordinate_search_func(
                             collection_name = table[0],
                             coordinate_vector = coord,
+                            page_number = result['page'][idx],
                             limit = 2,
                             return_format = "pl"
                         )

@@ -7,6 +7,7 @@ import pandas as pd
 from typing import List, Dict, Any, Optional, Union, Tuple
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
+from qdrant_client.http.models import Filter
 from .math_transform import calculate_centroid, one_y_point
 
 def qdrant_search(
@@ -209,6 +210,7 @@ def qdrant_search(
 def qdrant_coordinate_search(
     collection_name: str,
     coordinate_vector: List[float],
+    page_number: int = 1,
     limit: int = 10,
     return_format: str = "pl"
 ) -> Any:
@@ -267,6 +269,11 @@ def qdrant_coordinate_search(
         search_results = client.search(
             collection_name=collection_name,
             query_vector=("cord", coordinate_vector),  # Use the coordinate vector
+            query_filter=Filter(
+                must=[
+                    {"key": "page", "match": {"value": page_number}}
+                ]
+            ),
             limit=limit
         )
     except Exception as e:
