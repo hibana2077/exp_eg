@@ -7,7 +7,7 @@ import pandas as pd
 from typing import List, Dict, Any, Optional, Union, Tuple
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-
+from .math_transform import calculate_centroid
 
 def qdrant_search(
     db_name: str,
@@ -241,7 +241,7 @@ def qdrant_coordinate_search(
     """
     QDRANT_HOST = os.getenv("QDRANT_HOST", "qdrant")
     QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
-    
+    coordinate_vector = calculate_centroid(coordinate_vector)
     # Initialize connection
     client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
     
