@@ -55,7 +55,7 @@ class QdrantVecStore:
                         collection_name=collection_name,
                         vectors_config={
                             "embed": models.VectorParams(size=TEXT_EMB_DIM, distance=models.Distance.COSINE),
-                            "cord": models.VectorParams(size=4, distance=models.Distance.EUCLID),
+                            "cord": models.VectorParams(size=2, distance=models.Distance.EUCLID),
                         }
                     )
                 elif collection_name == self.images_collection_name:
