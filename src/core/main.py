@@ -256,6 +256,9 @@ async def search(data:dict):
                 result = result
             else:
                 raise ValueError("Invalid return format")
+            pprint.pprint(result)
+            # if data.get("do_coord_search", False):
+            #     coords = 
             # add the result to the return_tables
             return_tables.append({
                 "table_name": table[0],
