@@ -20,7 +20,7 @@ from typing import List, Dict, Any, Optional, Union, Tuple
 # Import Qdrant implementations
 from utils.embedding import add_emb_cond
 from utils.qdrant_indexing import qdrant_indexing, add_qdrant_index_into_condition 
-from utils.qdrant_search import qdrant_search, qdrant_hybrid_search
+from utils.qdrant_search import qdrant_search, qdrant_hybrid_search, qdrant_coordinate_search
 from utils.parse import convert
 from utils.qdrant_store import save_vec_store as save_vec_store_func
 from utils.qdrant_store import list_all_tables as list_all_tables_func
@@ -57,6 +57,7 @@ Path("/root/mortis/temp").mkdir(parents=True, exist_ok=True)
 # Define function aliases
 search_func = qdrant_search
 hybrid_search_func = qdrant_hybrid_search
+coordinate_search_func = qdrant_coordinate_search
 indexing_func = qdrant_indexing
 add_index_into_condition_func = add_qdrant_index_into_condition
 
