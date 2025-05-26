@@ -257,8 +257,22 @@ async def search(data:dict):
             else:
                 raise ValueError("Invalid return format")
             pprint.pprint(result)
-            # if data.get("do_coord_search", False):
-            #     coords = 
+            if data.get("do_coord_search", False):
+                coords = result['coord']
+                labels = result['label']
+                for idx, (coord, label) in enumerate(zip(coords, labels)):
+                    if label == "section_header":
+                        # search nearby texts
+                        logging.info(f"Coordinate search for section header at index {idx}: {coord}")
+                        coord_result = coordinate_search_func(
+                            collection_name = table[0],
+                            coordinate_vector = coord,
+                            limit = 1,
+                            return_format = "pl"
+                        )
+                        nearby_texts = coord_result[0].to_dict(as_series=False)['text'][0]
+                        # Add nearby texts to the result
+                        result['text'][idx] += f"\n\n{nearby_texts}"
             # add the result to the return_tables
             return_tables.append({
                 "table_name": table[0],
