@@ -145,6 +145,7 @@ def view_kb_dialog(kb_name:str):
             query_text = st.text_input("Query text")
             top_k = st.number_input("Top K", min_value=1, max_value=100, value=5)
             do_image_search = st.checkbox("Do image search", value=False)
+            do_coord_search = st.checkbox("Do coordinate search", value=False)
             submit_button = st.form_submit_button(label='Retrieval Testing')
 
             if submit_button:
@@ -154,6 +155,7 @@ def view_kb_dialog(kb_name:str):
                     "select_cols": ["*"],
                     "conditions": {"text": [{"field": "text", "query": query_text, 'topn': top_k}]},
                     "do_image_search": do_image_search,
+                    "do_coord_search": do_coord_search,
                     "limit": top_k,
                     "return_format": "pl"
                 }
