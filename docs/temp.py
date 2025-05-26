@@ -20,6 +20,10 @@ centroid_title_1 = get_centroid(title_1)
 centroid_text_1 = get_centroid(text_1)
 centroid_title_3 = get_centroid(title_3)
 
+print(f"Centroid of title_1: {centroid_title_1}")
+print(f"Centroid of text_1: {centroid_text_1}")
+print(f"Centroid of title_3: {centroid_title_3}")
+
 # 計算距離
 dist_text1_to_title1 = distance(centroid_text_1, centroid_title_1)
 dist_title3_to_title1 = distance(centroid_title_3, centroid_title_1)

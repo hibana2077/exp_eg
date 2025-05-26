@@ -13,7 +13,7 @@ from fastembed import TextEmbedding, ImageEmbedding  # type: ignore
 from cfg.emb_settings import EMB_MODEL, IMG_EMB_MODEL, TABLE_EMB_MODEL, TABLE_CHUNK_MAX_TOKENS, TEXT_EMB_DIM, IMG_EMB_DIM, TABLE_EMB_DIM
 from cfg.table_format import TEXT_FORMAT, IMAGE_FORMAT, TABLE_FORMAT
 from .parse import table_convert, merge_adjacent_tables
-from .math_transform import calculate_centroid, get_first_point, get_second_point
+from .math_transform import calculate_centroid, get_first_point, one_y_point
 
 logging.basicConfig(level=logging.INFO)
 
@@ -147,7 +147,7 @@ class QdrantVecStore:
                     vector={
                         "embed": embeds[i].tolist() if hasattr(embeds[i], 'tolist') else embeds[i],
                         # "cord": calculate_centroid(cords[i]) if len(cords[i])==4 else [0.0, 0.0]
-                        "cord": get_first_point(cords[i]) if len(cords[i]) == 4 else [0.0, 0.0]
+                        "cord": one_y_point(cords[i]) if len(cords[i]) == 4 else [0.0, 0.0]
                     },
                     payload=text
                 ))

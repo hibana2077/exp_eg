@@ -7,7 +7,7 @@ import pandas as pd
 from typing import List, Dict, Any, Optional, Union, Tuple
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from .math_transform import calculate_centroid, get_first_point, get_second_point
+from .math_transform import calculate_centroid, one_y_point
 
 def qdrant_search(
     db_name: str,
@@ -243,7 +243,7 @@ def qdrant_coordinate_search(
     QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
     
     # coordinate_vector = calculate_centroid(coordinate_vector)
-    coordinate_vector = get_first_point(coordinate_vector)
+    coordinate_vector = one_y_point(coordinate_vector)
 
     # Initialize connection
     client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
