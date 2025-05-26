@@ -15,6 +15,31 @@ def calculate_centroid(points:list[int]) -> tuple[float, float]:
 
     return [centroid_x, centroid_y]
 
+def get_first_point(points:list[int]) -> tuple[float, float]:
+    """
+    Get the first point A from the list of coordinates.
+    
+    Args:
+        points: List of coordinates, where points[0] is point A and points[1] is point B.
+
+    Returns:
+        tuple: Coordinates of point A (x, y).
+    """
+    return (points[0], points[1])
+
+def get_second_point(points:list[int]) -> tuple[float, float]:
+    """
+    Get the second point B from the list of coordinates.
+
+    Args:
+        points: List of coordinates, where points[0] is point A and points[1] is point B.
+
+    Returns:
+        tuple: Coordinates of point B (x, y).
+    """
+    return (points[2], points[3])
+
+
 # Example usage
 if __name__ == "__main__":
     # Test example
