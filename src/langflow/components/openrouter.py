@@ -86,9 +86,8 @@ class LanguageModelComponent(LCModelComponent):
             name="temperature",
             display_name="Temperature",
             value=0.1,
-            info="Controls randomness in responses",
             range_spec=RangeSpec(min=0, max=1, step=0.01),
-            advanced=True,
+            show=True,
         ),
     ]
 

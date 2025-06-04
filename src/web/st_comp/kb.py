@@ -164,7 +164,6 @@ def view_kb_dialog(kb_name:str):
                 if res.status_code == 200 and res.json()["status"] == "success":
                     result = res.json()["tables"]
                     st.success("Retrieval success!")
-                    # st.json(result,expanded=False)
                     rag_data_text = ""
                     rag_data_img = []
                     for table in result['tables']:

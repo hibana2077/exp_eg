@@ -105,6 +105,7 @@ async def process_file(task_queue:dict):
     payload:
     {
         "kb_name": "knowledge_base_name",
+        "kb_owner": "knowledge_base_owner",
         "task_queue": [
             {
                 "kb_name": "knowledge_base_name",
@@ -122,11 +123,13 @@ async def process_file(task_queue:dict):
             secure=False,
         )
         # find the kb_name in MongoDB
-        kb_name = task_queue["kb_name"]
+        kb_name = task_queue.get("kb_name", "")
+        kb_owner = task_queue.get("kb_owner", "")
         index_info = mongo_collection.find_one({"kb_name": kb_name})
         if index_info is None:
             index_info = {
                 "kb_name": kb_name,
+                "kb_owner": kb_owner,
                 "files": [],
             }
             mongo_collection.insert_one(index_info)
@@ -180,7 +183,6 @@ async def list_tables(kb_name:str):
     }
     """
     try:
-        # tables = list_all_tables(kb_name)
         tables = list_all_tables_mongo_func(kb_name)
         return {"status": "success", "tables": tables}
     except Exception as e:
