@@ -1,7 +1,9 @@
 def size_cal(size:int) -> str:
     """
     Calculate the size of the file
+
     :param size: file size in bytes
+    
     :return: file size in human readable format
     """
     if size < 1024:
