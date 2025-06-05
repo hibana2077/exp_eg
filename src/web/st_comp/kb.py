@@ -87,6 +87,7 @@ def view_kb_dialog(kb_name:str):
                     # Send request to core /process_file
                     payload = {
                         "kb_name": kb_name,
+                        "kb_owner": st.session_state.get("username", "default"),
                         "task_queue": []
                     }
                     for obj in selected_objects:
