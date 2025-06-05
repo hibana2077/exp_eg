@@ -105,8 +105,9 @@ def view_kb_dialog(kb_name:str):
                     st.warning("Please select at least one object to process.")
 
     with tab3:
+        kb_owner = st.session_state.get("username", "default")
         st.write("Retrieval testing")
-        res = requests.get(f"{CORE_SERVER}/list_tables/{kb_name}")
+        res = requests.get(f"{CORE_SERVER}/list_tables/{kb_owner}/{kb_name}") # TODO
         if res.json()['status'] != "success":
             st.error(res.json()['message'])
             st.stop()

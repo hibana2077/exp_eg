@@ -45,7 +45,7 @@ mongo_client = pymongo.MongoClient(
     password=MONGO_INITDB_ROOT_PASSWORD
 )
 mongo_db = mongo_client["mortis"]
-mongo_collection = mongo_db["index_info"]
+mongo_collection = mongo_db["index_info"] # TODO: Change to username (half)
 
 app = FastAPI()
 
@@ -125,11 +125,11 @@ async def process_file(task_queue:dict):
         # find the kb_name in MongoDB
         kb_name = task_queue.get("kb_name", "")
         kb_owner = task_queue.get("kb_owner", "")
+        mongo_collection = mongo_db[kb_owner]
         index_info = mongo_collection.find_one({"kb_name": kb_name})
         if index_info is None:
             index_info = {
                 "kb_name": kb_name,
-                "kb_owner": kb_owner,
                 "files": [],
             }
             mongo_collection.insert_one(index_info)
@@ -174,8 +174,8 @@ async def process_file(task_queue:dict):
         # return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}
         return {"status": "error", "message": str(traceback.format_exc())}
 
-@app.get("/list_tables/{kb_name}")
-async def list_tables(kb_name:str):
+@app.get("/list_tables/{kb_owner}/{kb_name}")
+async def list_tables(kb_owner:str, kb_name:str):
     """
     payload:
     {
@@ -183,7 +183,7 @@ async def list_tables(kb_name:str):
     }
     """
     try:
-        tables = list_all_tables_mongo_func(kb_name)
+        tables = list_all_tables_mongo_func(kb_name, kb_owner)
         return {"status": "success", "tables": tables}
     except Exception as e:
         return {"status": "error", "message": str(e)+" "+str(e.__traceback__.tb_lineno)}

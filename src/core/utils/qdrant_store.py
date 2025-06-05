@@ -232,14 +232,14 @@ class QdrantVecStore:
         return kb_collections
 
     @staticmethod
-    def list_all_collections_mongo(kb_name: str):
+    def list_all_collections_mongo(kb_name: str, kb_owner:str):
         """Get collection data from MongoDB for compatibility"""
         ms = os.getenv("MONGO_SERVER", "mongodb://localhost:27017")
         user = os.getenv("MONGO_INITDB_ROOT_USERNAME", "root")
         pwd = os.getenv("MONGO_INITDB_ROOT_PASSWORD", "example")
         client = pymongo.MongoClient(ms, username=user, password=pwd)
         db = client["mortis"]
-        coll = db.get_collection("index_info")
+        coll = db.get_collection(kb_owner)
         return coll.find_one({"kb_name": kb_name}, {"_id": 0})
 
 
@@ -256,6 +256,6 @@ def list_all_tables(kb_name: str):
     return QdrantVecStore.list_all_collections(kb_name)
 
 
-def list_all_tables_mongo(kb_name: str):
+def list_all_tables_mongo(kb_name: str, kb_owner: str):
     """Get collection info from MongoDB for compatibility"""
-    return QdrantVecStore.list_all_collections_mongo(kb_name)
+    return QdrantVecStore.list_all_collections_mongo(kb_name, kb_owner)
