@@ -1,105 +1,106 @@
 # Developer Documentation
 
-本文件針對本專案的開發者，說明架構、開發環境、啟動流程、目錄結構、常見問題與貢獻方式。
+This document is for developers of this project, describing the architecture, development environment, startup process, directory structure, common problems, and contribution methods.
 
 ---
 
-## 系統架構
+## System Architecture
 
-本系統採用微服務架構，主要元件如下：
-- **Web**：Streamlit 前端，提供知識庫操作介面。
-- **Core**：FastAPI，負責向量化、檢索、Qdrant 操作。
-- **Backend**：FastAPI，負責業務邏輯、用戶管理、知識庫管理。
-- **Qdrant**：向量資料庫。
-- **MongoDB**：儲存知識庫與文件中繼資料。
-- **MinIO**：物件儲存，存放原始文件。
+This system adopts a microservices architecture, with the following main components:
 
-架構圖請參考 `/docs/assets/arch.png`。
+- **Web**: Streamlit frontend, providing a knowledge base operation interface.
+- **Core**: FastAPI, responsible for vectorization, retrieval, and Qdrant operations.
+- **Backend**: FastAPI, responsible for business logic, user management, and knowledge base management.
+- **Qdrant**: Vector database.
+- **MongoDB**: Stores knowledge base and document metadata.
+- **MinIO**: Object storage, storing original documents.
 
----
-
-## 目錄結構說明
-
-- `src/`：主要程式碼與部署腳本
-  - `core/`：向量化與檢索 API
-  - `backend/`：業務邏輯 API
-  - `web/`：Streamlit 前端
-  - `docker-compose.yaml`：多服務協同啟動
-  - `install_everything.sh`、`setup.sh`：安裝與初始化腳本
-- `docs/`：技術文件、API 文件、架構圖
-- `test_file/`：測試用 PDF 文件
+Refer to `/docs/assets/arch.png` for the architecture diagram.
 
 ---
 
-## 開發環境安裝
+## Directory Structure Description
 
-1. **安裝 Docker 與 Docker Compose**
-   - 建議執行 `src/install_everything.sh`，自動安裝所有依賴。
-   - macOS 用戶可手動安裝 Docker Desktop。
-
-2. **建立環境變數檔**
-
-   ```bash
-   cp src/.env-template src/.env
-   # 並根據需求修改內容
-   ```
-
-3. **建立資料目錄**
-
-   ```bash
-   sudo mkdir -p /data/qdrant-data /data/minio-data /data/mongo-data
-   sudo chmod -R 777 /data
-   ```
-
-4. **啟動服務**
-
-   ```bash
-   cd src
-   bash setup.sh
-   # 或手動執行 docker-compose up -d --build
-   ```
-
-5. **前端入口**
-   - 預設網址：<http://localhost:4321>
+- `src/`: Main code and deployment scripts
+   - `core/`: Vectorization and retrieval API
+   - `backend/`: Business logic API
+   - `web/`: Streamlit frontend
+   - `docker-compose.yaml`: Multi-service collaborative startup
+   - `install_everything.sh`, `setup.sh`: Installation and initialization scripts
+- `docs/`: Technical documents, API documents, architecture diagrams
+- `test_file/`: Test PDF documents
 
 ---
 
-## 主要元件說明
+## Development Environment Installation
+
+1. **Install Docker and Docker Compose**
+    - It is recommended to execute `src/install_everything.sh` to automatically install all dependencies.
+    - macOS users can manually install Docker Desktop.
+
+2. **Create Environment Variable File**
+
+    ```bash
+    cp src/.env-template src/.env
+    # And modify the content as needed
+    ```
+
+3. **Create Data Directory**
+
+    ```bash
+    sudo mkdir -p /data/qdrant-data /data/minio-data /data/mongo-data
+    sudo chmod -R 777 /data
+    ```
+
+4. **Start Services**
+
+    ```bash
+    cd src
+    bash setup.sh
+    # Or manually execute docker-compose up -d --build
+    ```
+
+5. **Frontend Entry**
+    - Default URL: <http://localhost:4321>
+
+---
+
+## Main Component Description
 
 - **Web** (`src/web/`)
-  - Streamlit 實作，支援登入/註冊、知識庫管理、文件上傳與查詢。
+   - Streamlit implementation, supports login/registration, knowledge base management, document upload and query.
 - **Core** (`src/core/`)
-  - FastAPI，負責文件向量化、Qdrant 檢索、混合查詢。
+   - FastAPI, responsible for document vectorization, Qdrant retrieval, and hybrid query.
 - **Backend** (`src/backend/`)
-  - FastAPI，負責用戶管理、知識庫 CRUD、MinIO/MongoDB 操作。
+   - FastAPI, responsible for user management, knowledge base CRUD, MinIO/MongoDB operations.
 - **Qdrant**
-  - 向量資料庫，支援高效向量檢索與混合查詢。
+   - Vector database, supports efficient vector retrieval and hybrid query.
 - **MongoDB**
-  - 儲存知識庫、文件中繼資料。
+   - Stores knowledge base and document metadata.
 - **MinIO**
-  - 物件儲存，存放原始文件。
+   - Object storage, storing original documents.
 
 ---
 
-## API 文件
+## API Documentation
 
-請參考 `/docs/api.md`，內含完整 API 規格與範例。
-
----
-
-## 常見問題
-
-- 啟動失敗請檢查 Docker 是否安裝、資料夾權限、環境變數是否正確。
-- 若需重設環境，請刪除 `/data` 目錄後重新執行 `setup.sh`。
+Please refer to `/docs/api.md`, which contains complete API specifications and examples.
 
 ---
 
-## 貢獻方式
+## Common Problems
 
-1. Fork 本專案，建立新分支。
-2. 開發與測試。
-3. 提交 Pull Request，說明修改內容。
+- If the startup fails, check whether Docker is installed, folder permissions, and environment variables are correct.
+- If you need to reset the environment, delete the `/data` directory and re-execute `setup.sh`.
 
 ---
 
-如有問題請聯絡專案維護者。
+## Contribution Method
+
+1. Fork this project and create a new branch.
+2. Develop and test.
+3. Submit a Pull Request, explaining the changes.
+
+---
+
+If you have any questions, please contact the project maintainers.
