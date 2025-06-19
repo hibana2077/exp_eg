@@ -1,85 +1,105 @@
 # Developer Documentation
 
-## Overview
+本文件針對本專案的開發者，說明架構、開發環境、啟動流程、目錄結構、常見問題與貢獻方式。
 
-This project is a document vectorization and semantic search system built on a modern stack. It supports multi-format document ingestion, vector storage, and hybrid search using Qdrant, with a web UI for user interaction.
+---
 
-## Architecture
+## 系統架構
 
-- **Web Interface**: Streamlit (with Tailwind) for user interaction.
-- **Core API**: FastAPI service for document processing, embedding, and vector operations.
-- **Backend API**: FastAPI service for business logic and user management.
-- **Qdrant**: Vector database for embeddings and similarity search.
-- **MongoDB**: Metadata storage.
-- **MinIO**: Object storage for raw files.
-- **LLM**: ollama for language models, Fastembed for embeddings.
+本系統採用微服務架構，主要元件如下：
+- **Web**：Streamlit 前端，提供知識庫操作介面。
+- **Core**：FastAPI，負責向量化、檢索、Qdrant 操作。
+- **Backend**：FastAPI，負責業務邏輯、用戶管理、知識庫管理。
+- **Qdrant**：向量資料庫。
+- **MongoDB**：儲存知識庫與文件中繼資料。
+- **MinIO**：物件儲存，存放原始文件。
 
-## Setup & Deployment
+架構圖請參考 `/docs/assets/arch.png`。
 
-1. **Clone the repository** and enter the project directory.
-2. **Copy environment template**:
-   ```zsh
-   cp .env-template .env
+---
+
+## 目錄結構說明
+
+- `src/`：主要程式碼與部署腳本
+  - `core/`：向量化與檢索 API
+  - `backend/`：業務邏輯 API
+  - `web/`：Streamlit 前端
+  - `docker-compose.yaml`：多服務協同啟動
+  - `install_everything.sh`、`setup.sh`：安裝與初始化腳本
+- `docs/`：技術文件、API 文件、架構圖
+- `test_file/`：測試用 PDF 文件
+
+---
+
+## 開發環境安裝
+
+1. **安裝 Docker 與 Docker Compose**
+   - 建議執行 `src/install_everything.sh`，自動安裝所有依賴。
+   - macOS 用戶可手動安裝 Docker Desktop。
+
+2. **建立環境變數檔**
+
+   ```bash
+   cp src/.env-template src/.env
+   # 並根據需求修改內容
    ```
-3. **Install dependencies and set up services**:
-   ```zsh
-   bash ./install_everything.sh
-   bash ./setup.sh
-   docker-compose up -d --build
+
+3. **建立資料目錄**
+
+   ```bash
+   sudo mkdir -p /data/qdrant-data /data/minio-data /data/mongo-data
+   sudo chmod -R 777 /data
    ```
-4. **Configuration**:
-   - Edit `.env` for credentials and endpoints.
-   - Adjust `minio-config.json` for MinIO settings.
 
-5. **Services**:
-   - `core`: Vector operations API (`src/core`)
-   - `backend`: Business logic API (`src/backend`)
-   - `web`: Streamlit UI (`src/web`)
-   - `db_qdrant`, `db_mongo`, `minio`: Databases and storage
+4. **啟動服務**
 
-## API Reference
+   ```bash
+   cd src
+   bash setup.sh
+   # 或手動執行 docker-compose up -d --build
+   ```
 
-See `docs/api.md` for full API details. Key endpoints include:
+5. **前端入口**
+   - 預設網址：<http://localhost:4321>
 
-- `POST /new_kb` (backend): Create a knowledge base
-- `GET /list_all_kb/{owner}` (backend): List all KBs for a user
-- `POST /process_file` (core): Process and index a file
-- `POST /search` (core): Search documents
+---
 
-## Vector Database (Qdrant)
+## 主要元件說明
 
-- Configured via Docker Compose.
-- Stores vectors in collections by data type (text, image, table).
-- Supports dense, filter, and hybrid search.
-- See `QDRANT_NOTES.md` for advanced usage and configuration.
+- **Web** (`src/web/`)
+  - Streamlit 實作，支援登入/註冊、知識庫管理、文件上傳與查詢。
+- **Core** (`src/core/`)
+  - FastAPI，負責文件向量化、Qdrant 檢索、混合查詢。
+- **Backend** (`src/backend/`)
+  - FastAPI，負責用戶管理、知識庫 CRUD、MinIO/MongoDB 操作。
+- **Qdrant**
+  - 向量資料庫，支援高效向量檢索與混合查詢。
+- **MongoDB**
+  - 儲存知識庫、文件中繼資料。
+- **MinIO**
+  - 物件儲存，存放原始文件。
 
-## Migration
+---
 
-If migrating from InfinityDB, follow `docs/migration_implementation_guide.md` for step-by-step instructions.
+## API 文件
 
-## Code Structure
+請參考 `/docs/api.md`，內含完整 API 規格與範例。
 
-- `src/core/`: Main vector and embedding logic, FastAPI endpoints.
-- `src/backend/`: User management, business logic, FastAPI endpoints.
-- `src/web/`: Streamlit UI components and pages.
-- `docs/`: API docs, tech stack, migration guides, and progress reports.
+---
 
-## Contribution
+## 常見問題
 
-- Fork and branch from `main`.
-- Follow existing code style (see `src/core/main.py` and `src/backend/main.py`).
-- Add/modify endpoints in the appropriate API service.
-- Update documentation as needed.
+- 啟動失敗請檢查 Docker 是否安裝、資料夾權限、環境變數是否正確。
+- 若需重設環境，請刪除 `/data` 目錄後重新執行 `setup.sh`。
 
-## Features
+---
 
-- Traceability and auditability
-- Multi-language support
-- Supports PDF, DOCX, PPTX, Markdown
-- One-click deployment
-- Complete API for integration
+## 貢獻方式
 
-## Future Plans
+1. Fork 本專案，建立新分支。
+2. 開發與測試。
+3. 提交 Pull Request，說明修改內容。
 
-- Develop Model Context Protocols (MCPs)
-- Performance optimization
+---
+
+如有問題請聯絡專案維護者。
