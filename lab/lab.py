@@ -1,63 +1,35 @@
-# moments_demo.py
-"""
-示範：計算中心矩 (order 1~5) 並繪圖
-執行方法：
-    python moments_demo.py
-依賴：
-    pip install numpy scipy matplotlib
-"""
-
 import numpy as np
-import scipy.stats as stats
 import matplotlib.pyplot as plt
 
-# ---------------------------
-# 1. 準備資料（範例用標準常態分布 1 萬筆）
-#    若用自己的資料，把下一行改掉即可，例如：
-#    data = np.loadtxt("mydata.csv")
-# ---------------------------
-data = np.random.normal(loc=0, scale=1, size=10_000)
+# Define activation functions
+def softplus(x):
+    return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
 
-# ---------------------------
-# 2. 計算 1~5 階中心矩
-# ---------------------------
-def central_moment(x: np.ndarray, k: int) -> float:
+def mish(x):
+    return x * np.tanh(softplus(x))
+
+def sine_mish(x, alpha=0.2, beta=np.pi, gamma=1.0):
     """
-    回傳第 k 階中心矩。
-    📌 注意：k=1 時理論值 0（因為減掉平均後再取一次方的期望）。
+    gSineMish variant:
+    f(x) = x * tanh(softplus(x)) + alpha * sigmoid(-gamma * x) * sin(beta * x)
     """
-    mean = np.mean(x)
-    return np.mean((x - mean) ** k)
+    sigmoid = 1 / (1 + np.exp(-(-gamma * x)))  # sigmoid(-gamma * x)
+    return mish(x) + alpha * sigmoid * np.sin(beta * x)
 
-moments = {k: central_moment(data, k) for k in range(1, 6)}
+# Data for plotting
+x = np.linspace(-5, 5, 1000)
+y_mish = mish(x)
+y_sine_mish = sine_mish(x)
 
-print("Central moments (order 1–5):")
-for k, v in moments.items():
-    print(f"{k} 階中心矩: {v:.6f}")
-
-# ---------------------------
-# 3. 繪圖
-# ---------------------------
-fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
-
-# 3-1 直方圖
-axes[0].hist(data, bins=50, density=True, alpha=0.7)
-axes[0].set_title("Histogram")
-axes[0].set_xlabel("Value")
-axes[0].set_ylabel("Density")
-
-# 3-2 中心矩長條圖
-axes[1].bar(list(moments.keys()), list(moments.values()))
-axes[1].set_xlabel("Order")
-axes[1].set_title("Central moments (1–5)")
-
-# 讓版面更緊湊
-plt.tight_layout()
-
-# ---------------------------
-# 4. 存檔 & 顯示
-# ---------------------------
-plt.savefig("moments_demo.png", dpi=300, bbox_inches="tight")
+# Plotting
+plt.figure(figsize=(8, 6))
+plt.plot(x, y_mish, label='Mish')
+plt.plot(x, y_sine_mish, label='Sine-Mish (α=0.2, β=π, γ=1)')
+plt.axhline(0, linewidth=0.5)
+plt.axvline(0, linewidth=0.5)
+plt.title('Mish and Sine-Mish Activation Functions')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.legend()
+plt.grid(True)
 plt.show()
-
-print("\n✅ 圖片已儲存為 moments_demo.png")
